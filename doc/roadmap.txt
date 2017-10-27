@@ -1,0 +1,13 @@
+
+
+Roadmap:
+
+- Display bar when ressing
+- Display bar when otherse are ressing as well
+- More prioritization:
+	* People with THALIZ gets prio
+	* AFK gets penalty
+
+-- redemption: 1209 mana
+-- redurrection: 1077 mana
+-- ancestral spirit: 1368 mana

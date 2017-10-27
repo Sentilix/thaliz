@@ -1,0 +1,250 @@
+﻿<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Script file="Thaliz.lua" />
+
+	<!-- template for Message list entries -->
+	<Button name="Thaliz_CellTemplate" hidden="true" virtual="true">
+		<Size>
+			<AbsDimension x="420" y="16"/>
+		</Size>
+		<Layers>
+			<Layer>
+				<FontString name="$parentMessage" justifyH="LEFT" inherits="GameFontNormal">
+					<Size>
+						<AbsDimension x="420" y="16"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="4" y="0"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnClick>
+				Thaliz_OnMessageClick(this)
+				PlaySound("igMainMenuOptionCheckBoxOn")
+			</OnClick>
+			<OnEnter>
+				getglobal(this:GetName().."BG"):SetVertexColor(1, 1, 1, 1)
+			</OnEnter>
+			<OnLeave>
+				getglobal(this:GetName().."BG"):SetVertexColor(0.7, 0.7, 0.7, 0.7)
+			</OnLeave>
+			<OnLoad>
+				this:GetScript("OnLeave")(this)
+			</OnLoad>
+		</Scripts>
+		<NormalTexture name="$parentBG">
+			<Color r="0.0" g="0.0" b="0.5" a="0.5"/>
+		</NormalTexture>
+	</Button>	
+
+	<!-- Main configuration frame -->
+	<Frame name="ThalizFrame" parent="UIParent" toplevel="true" hidden="true">
+		<Size>
+			<AbsDimension x="490" y="460" />
+		</Size>
+		<Anchors>
+			<Anchor point="TOPLEFT">
+				<Offset x="312" y="-118" />
+			</Anchor>
+		</Anchors>
+		<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+			<BackgroundInsets>
+				<AbsInset left="11" right="12" top="12" bottom="11" />
+			</BackgroundInsets>
+			<TileSize>
+				<AbsValue val="32" />
+			</TileSize>
+			<EdgeSize>
+				<AbsValue val="32" />
+			</EdgeSize>
+		</Backdrop>
+		<Frames>
+			<!-- Message list frame -->
+			<ScrollFrame name="$parentTableList" inherits="FauxScrollFrameTemplate">
+				<Size>
+					<AbsDimension x="430" y="330"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset>
+							<AbsDimension x="16" y="-24"/>
+						</Offset>
+					</Anchor>
+				</Anchors>
+				<Backdrop edgeFile="Interface\Tooltips\UI-Tooltip-Border" tile="true">
+					<EdgeSize>
+						<AbsValue val="16"/>
+					</EdgeSize>
+					<TileSize>
+						<AbsValue val="16"/>
+					</TileSize>
+				</Backdrop>
+				<Scripts>
+					<OnVerticalScroll>
+						FauxScrollFrame_OnVerticalScroll(20, Thaliz_UpdateMessageList);
+					</OnVerticalScroll>
+					<OnShow>
+						Thaliz_UpdateMessageList()
+					</OnShow>
+				</Scripts>
+			</ScrollFrame>
+			
+			<!-- Radio buttons for chat destination -->
+			<CheckButton name="$parentCheckbuttonRaid" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="16" y="-354"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Raid Chat")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(this);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckbuttonSay" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="144" y="-354"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Say")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(this);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckbuttonYell" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="272" y="-354"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Yell")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(this);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="16" y="-386"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Whisper the Target")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(this);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="272" y="-386"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Store per Character")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(this);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
+
+			<!-- Close button -->
+			<Button name="CloseButton" inherits="UIPanelButtonTemplate" movable="true" text="Close">
+				<Size>
+					<AbsDimension x="75" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="195" y="-424" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_CloseButton_OnClick();</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+		<Layers>
+			<Layer level="ARTWORK">
+				<Texture name="$parentHeaderTexture" file="Interface\DialogFrame\UI-DialogBox-Header">
+					<Size>
+						<AbsDimension x="256" y="64"/>
+					</Size>
+					<Anchors>
+						<Anchor point="TOP">
+							<Offset>
+								<AbsDimension x="0" y="12"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</Texture>
+				<FontString inherits="GameFontNormal" text="Thaliz Options">
+					<Anchors>
+						<Anchor point="TOP" relativeTo="$parentHeaderTexture">
+							<Offset>
+								<AbsDimension x="0" y="-14"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+				</FontString>
+			</Layer>
+		</Layers>
+		<Scripts>
+			<OnLoad>
+				this:SetMovable(true)
+				this:SetUserPlaced(true)
+				this:RegisterForDrag("LeftButton")
+			</OnLoad>
+			<OnDragStart>
+				this:StartMoving()
+			</OnDragStart>
+			<OnDragStop>
+				this:StopMovingOrSizing()
+			</OnDragStop>
+		</Scripts>
+	</Frame>
+
+	<!-- Dummy event frame -->
+	<Frame name="ThalizEventFrame">
+		<Scripts>
+			<OnLoad>
+				if (Thaliz_OnLoad) then
+				Thaliz_OnLoad();
+				end
+			</OnLoad>
+			<OnEvent>
+				if (Thaliz_OnEvent) then
+				Thaliz_OnEvent(event);
+				end
+			</OnEvent>
+			<OnUpdate>
+				if (Thaliz_OnTimer) then
+				Thaliz_OnTimer(arg1);
+				end
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+
+</Ui>
