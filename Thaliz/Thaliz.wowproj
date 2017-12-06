@@ -15,6 +15,7 @@
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WowAddonStudio\2.0\WowAddonStudio.targets" />
   <ItemGroup>
     <Content Include="changelog.txt" />
+    <Content Include="ReadMe.txt" />
     <Content Include="Thaliz.toc">
       <SubType>TableOfContents</SubType>
     </Content>

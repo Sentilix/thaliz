@@ -164,6 +164,21 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentCheckbuttonIncludeDefault" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="428" y="-354"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Include Defaults in Filtered macros")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(this);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
@@ -449,19 +464,6 @@
 		</Frames>
 		<Layers>			
 			<Layer level="BORDER">			
-				<!-- Texts -->
-				<!--
-				<FontString inherits="GameFontNormal" text="This macro is active when ...">
-					<Anchors>
-						<Anchor point="TOPLEFT" relativeTo="$parent">
-							<Offset>
-								<AbsDimension x="26" y="-70"/>
-							</Offset>
-						</Anchor>
-					</Anchors>
-				</FontString>
-				-->
-
 				<!-- Message EditBox border -->
 				<Texture name="$parentTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
 					<Size>
@@ -578,5 +580,4 @@
 			</OnUpdate>
 		</Scripts>
 	</Frame>
-
 </Ui>

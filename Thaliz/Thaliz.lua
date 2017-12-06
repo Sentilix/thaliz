@@ -1,16 +1,12 @@
 ﻿--[[
-	Author:			Mimma
-	Create Date:	5/10/2015 5:50:57 PM
-	
-- write when you are ressing a target another healer is also ressing (maybe with name?)
+Author:			Mimma
+Create Date:	05/10/2015 17:50:57
 
--- UI to display corpses / deaths - prioritised (a little like decursive)	
-	
-	
-TODO:
-- Store parameter (guild name etc) per token (same way as the group?)
-- Create AI to select random msg, based on player rules.
+The latest version of Thaliz can always be found at:
+https://armory.digam.dk/thaliz
 
+The source code can be found at Github:
+https://github.com/Sentilix/thaliz
 
 ]]
 
@@ -38,14 +34,6 @@ local EMOTE_GROUP_GUILD = "Guild";
 local EMOTE_GROUP_CHARACTER = "Name";
 local EMOTE_GROUP_CLASS = "Class";
 local EMOTE_GROUP_RACE = "Race";
-
-local EMOTE_GROUPS = {
-	EMOTE_GROUP_DEFAULT,
-	EMOTE_GROUP_GUILD,
-	EMOTE_GROUP_CHARACTER,
-	EMOTE_GROUP_CLASS,
-	EMOTE_GROUP_RACE
-}
 
 --	List of valid class names with priority and resurrection spell name (if any)
 local classInfo = {
@@ -81,6 +69,7 @@ local Thaliz_ConfigurationLevel = Thaliz_Configuration_Default_Level;
 local Thaliz_ROOT_OPTION_CharacterBasedSettings = "CharacterBasedSettings";
 local Thaliz_OPTION_ResurrectionMessageTargetChannel = "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper = "ResurrectionMessageTargetWhisper";
+local Thaliz_OPTION_AlwaysIncludeDefaultGroup = "AlwaysIncludeDefaultGroup";
 local Thaliz_OPTION_ResurrectionMessages = "ResurrectionMessages";
 
 
@@ -91,26 +80,26 @@ Thaliz_Options = {}
 -- List of resurrection messages
 --	{ "Message", "Group", "Group parameter value" }
 local Thaliz_DefaultResurrectionMessages = {
-	{ "(Ressing) Stop slacking and get up, %s!",						EMOTE_GROUPS[1], "" },
-	{ "(Ressing) How many \'Z\'s are in Vaelastrasz, %s?",				EMOTE_GROUPS[1], "" },
-	{ "(Ressing) Did you just do the unsafety dance, %s?",				EMOTE_GROUPS[1], "" },
-	{ "(Ressing) I\'m keeping my eye on you, %s!",						EMOTE_GROUPS[1], "" },
-	{ "(Ressing) Too soon, %s - you have died too soon!",				EMOTE_GROUPS[1], "" },
-	{ "(Ressing) Cower, %s! The age of darkness is at hand!",			EMOTE_GROUPS[1], "" },
-	{ "(Ressing) %s! Death! Destruction!",								EMOTE_GROUPS[1], "" },
-	{ "(Ressing) No more play, %s?",									EMOTE_GROUPS[1], "" },
-	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUPS[1], "" },
-	{ "(Ressing) Your friends will abandon you, %s!",					EMOTE_GROUPS[1], "" },
-	{ "(Ressing) Slay %s in the masters name!",							EMOTE_GROUPS[1], "" },
-	{ "(Ressing) %s, Chuck Norris would have survived that!",			EMOTE_GROUPS[1], "" },
-	{ "(Ressing) %s, seems you ran out of health!",						EMOTE_GROUPS[1], "" },
-	{ "(Ressing) %s, you make the floor look dirty!",					EMOTE_GROUPS[1], "" },
-	{ "(Ressing) %s, there\'s loot waiting for you!",					EMOTE_GROUPS[1], "" },
-	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUPS[1], "" },
-	{ "(Ressing) Shhh, %s... it will all be over soon.",				EMOTE_GROUPS[1], "" },
-	{ "(Ressing) %s! Cease this foolish venture at once!",				EMOTE_GROUPS[1], "" },
-	{ "(Ressing) Death is the only escape, %s.",						EMOTE_GROUPS[1], "" },
-	{ "(Ressing) The time for practice is over, %s!",					EMOTE_GROUPS[1], "" }
+	{ "(Ressing) Stop slacking and get up, %s!",						EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) How many \'Z\'s are in Vaelastrasz, %s?",				EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) Did you just do the unsafety dance, %s?",				EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) I\'m keeping my eye on you, %s!",						EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) Too soon, %s - you have died too soon!",				EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) Cower, %s! The age of darkness is at hand!",			EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) %s! Death! Destruction!",								EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) No more play, %s?",									EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) Your friends will abandon you, %s!",					EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) Slay %s in the masters name!",							EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) %s, Chuck Norris would have survived that!",			EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) %s, seems you ran out of health!",						EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) %s, you make the floor look dirty!",					EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) %s, there\'s loot waiting for you!",					EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) Shhh, %s... it will all be over soon.",				EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) %s! Cease this foolish venture at once!",				EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) Death is the only escape, %s.",						EMOTE_GROUP_DEFAULT, "" },
+	{ "(Ressing) The time for practice is over, %s!",					EMOTE_GROUP_DEFAULT, "" }
 }
 
 
@@ -196,7 +185,6 @@ SlashCmdList["THALIZ_RES"] = function(msg)
 	Thaliz_StartResurrectionOnPriorityTarget();
 end
 
-
 --[[
 	Request client version information
 	Syntax: /thalizversion
@@ -275,7 +263,6 @@ end
 --
 --  *******************************************************
 function Thaliz_OpenConfigurationDialogue()
-	--Thaliz_RefreshVisibleMessageList(1);	
 	ThalizFrame:Show();
 end
 
@@ -306,8 +293,6 @@ function Thaliz_RefreshVisibleMessageList(offset)
 	end
 end
 
-
-
 function Thaliz_UpdateMessageList(frame)
 	FauxScrollFrame_Update(ThalizFrameTableList, THALIZ_MAX_MESSAGES, 10, 20);
 	local offset = FauxScrollFrame_GetOffset(ThalizFrameTableList);
@@ -326,11 +311,10 @@ function Thaliz_InitializeListElements()
 	end
 end
 
-local currentObjectId;
+local currentObjectId;	-- A small hack: the object ID is lost when using own frame
 function Thaliz_OnMessageClick(object)
 	Thaliz_CloseMsgEditorButton_OnClick();
 
-	--local msgID = object:GetID();
 	currentObjectId = object:GetID();
 	local offset = FauxScrollFrame_GetOffset(ThalizFrameTableList);
 		
@@ -345,7 +329,6 @@ function Thaliz_OnMessageClick(object)
 	prm = Thaliz_CheckGroupValue(prm);
 
 	local frame = getglobal("ThalizMsgEditorFrame");
-	--frame:SetText(msg);
 	getglobal(frame:GetName().."Message"):SetText(msg);
 	getglobal(frame:GetName().."GroupValue"):SetText(prm);
 
@@ -423,19 +406,27 @@ function Thaliz_HandleCheckbox(checkbox)
 		end
 	end
 
+	-- "single" checkboxes (checkboxes with no impact on other checkboxes):
 	if getglobal("ThalizFrameCheckbuttonWhisper"):GetChecked() then
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 1);
 	else
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 0);
 	end	
 	
+	if getglobal("ThalizFrameCheckbuttonIncludeDefault"):GetChecked() then
+		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 1);
+	else
+		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 0);
+	end	
+		
 	if getglobal("ThalizFrameCheckbuttonPerCharacter"):GetChecked() then
 		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Character");
 	else
 		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Realm");
 	end	
+
 	
-	-- Emote Groups:
+	-- Emote Groups: Only one can be active:
 	if checkboxname == "ThalizMsgEditorFrameCheckbuttonAlways" then	
 		if checkbox:GetChecked() then
 			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
@@ -473,7 +464,6 @@ function Thaliz_HandleCheckbox(checkbox)
 		end;
 	end;
 end
-
 
 function Thaliz_GetRootOption(parameter, defaultValue)
 	if Thaliz_Options then
@@ -553,7 +543,6 @@ function Thaliz_SetOption(parameter, value)
 	end
 end
 
-
 function Thaliz_InitializeConfigSettings()
 
 	if not Thaliz_Options then
@@ -599,6 +588,7 @@ function Thaliz_ValidateResurrectionMessages()
 			macros[n] = { macro, EMOTE_GROUP_DEFAULT, "" }
 			changed = True;
 		else
+			-- Macro is ... hmmm beyond repair?; reset it:
 			macros[n] = { "", EMOTE_GROUP_DEFAULT, "" }
 			changed = True;
 		end
@@ -608,7 +598,6 @@ function Thaliz_ValidateResurrectionMessages()
 		Thaliz_SetResurrectionMessages(macros);	
 	end;
 end;
-
 
 function Thaliz_GetUnitID(playername)
 	local groupsize, grouptype;
@@ -632,6 +621,7 @@ function Thaliz_GetUnitID(playername)
 
 	return nil;
 end
+
 
 --  *******************************************************
 --
@@ -657,7 +647,13 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	local race = string.upper(UnitRace(unitid));
 	local class = string.upper(UnitClass(unitid));
 	local charname = string.upper(playername);
-	guildname = string.upper(guildname);
+
+	if guildname then
+		guildname = string.upper(guildname);
+	else
+		-- Note: guildname is unfortunately not detected for released corpses.
+		guildname = "";
+	end;	
 
 	--echo(string.format("Ressing: player=%s, unitid=%s", playername, unitid));
 	--echo(string.format("Guild=%s, class=%s, race=%s", guildname, class, race));
@@ -728,20 +724,25 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	for n=1, table.getn( rmacro ), 1 do
 		index = index + 1;
 		macros[index] = rmacro[n];
-	end
-	-- No macros matching rules; use the default set:
-	if table.getn(macros) == 0 then
-		macros = dmacro;
 	end;
+	
 
+	-- Include the default macro list if
+	-- * No macros matching group rules, or
+	-- * The "Include Default" option is selected.
+	if table.getn(macros) == 0 or 
+		Thaliz_GetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup) == 1 then
+		for n=1, table.getn( dmacro ), 1 do
+			index = index + 1;
+			macros[index] = dmacro[n];
+		end;
+	end;
 
 	
 	local validMessages = {}
 	local validCount = 0;
 	for n=1, table.getn( macros ), 1 do
 		local msg = macros[n][1];
-		local grp = macros[n][2];
-		-- TODO: Check GRP to see match!
 		if msg and not (msg == "") then
 			validCount = validCount + 1;
 			validMessages[ validCount ] = msg;
@@ -780,7 +781,7 @@ function Thaliz_GetResurrectionMessages()
 	if not type(messages[1]) == "table" then
 		echo('Converting table from v1.3 to v1.4 ...');
 		for key, value in messages do
-			messages[key] = { messages[key], EMOTE_GROUPS[1], "" }
+			messages[key] = { messages[key], EMOTE_GROUP_DEFAULT, "" }
 		end
 		Thaliz_SetResurrectionMessages(messages);
 	end;
@@ -832,7 +833,7 @@ end
 
 function Thaliz_CheckGroup(group)
 	if not group or group == "" then
-		group = EMOTE_GROUPS[1];
+		group = EMOTE_GROUP_DEFAULT;
 	end
 	return group;
 end
@@ -1132,7 +1133,7 @@ function Thalix_CheckIsNewVersion(versionstring)
 			if not THALIZ_UPDATE_MESSAGE_SHOWN then
 				THALIZ_UPDATE_MESSAGE_SHOWN = true;
 				Thaliz_Echo(string.format("NOTE: A newer version of ".. COLOUR_INTRO .."THALIZ"..COLOUR_CHAT.."! is available (version %s)!", versionstring));
-				Thaliz_Echo("NOTE: Go to http://armory.digam.dk to download latest version.");
+				Thaliz_Echo("NOTE: Go to https://armory.digam.dk/thaliz to download latest version.");
 			end
 		end	
 	end
@@ -1222,7 +1223,6 @@ local function HandleTXVerCheck(message, sender)
 	Thalix_CheckIsNewVersion(message);
 end
 
-
 function Thaliz_OnChatMsgAddon(event, prefix, msg, channel, sender)
 	if prefix == THALIZ_PREFIX then
 		Thaliz_HandleThalizMessage(msg, sender);	
@@ -1232,13 +1232,12 @@ function Thaliz_OnChatMsgAddon(event, prefix, msg, channel, sender)
 	end
 end
 
-
-
 function Thaliz_HandleThalizMessage(msg, sender)
 --	echo(sender.." --> "..msg);
-
 	local _, _, cmd, message, recipient = string.find(msg, "([^#]*)#([^#]*)#([^#]*)");	
-	--	Ignore message if it is not for me. Receipient can be blank, which means it is for everyone.
+	
+	--	Ignore message if it is not for me. 
+	--	Receipient can be blank, which means it is for everyone.
 	if not (recipient == "") then
 		if not (recipient == UnitName("player")) then
 			return
@@ -1254,12 +1253,11 @@ function Thaliz_HandleThalizMessage(msg, sender)
 	elseif cmd == "TX_VERCHECK" then
 		HandleTXVerCheck(message, sender)
 	end
-	
 end
 
 function Thaliz_HandleCTRAMessage(msg, sender)	
-	-- "RESSED" is received when a res LANDS on target.
-	-- Add to blacklist.
+	-- "RESSED" is received when a res LANDS on the target.
+	-- Add the target to the blacklist, so we don't ress him again
 	if msg == "RESSED" then
 		Thaliz_BlacklistPlayer(sender);
 		return;
@@ -1270,26 +1268,11 @@ function Thaliz_HandleCTRAMessage(msg, sender)
 	local _, _, ctra_command, ctra_player = string.find(msg, "(%S*) (%S*)");
 	if ctra_command and ctra_player then
 		if ctra_command == "RES" then
-			-- If sender is from ME, it is ME doing a manual ress. Announce it!
+			-- If sender is from ME, it is ME doing a manual (ressing a released 
+			-- corpse) ress. Announce the ressurection!
 			if sender == UnitName("player") then
 				-- Check if player is online; for this we need the unit id!
-				local unitid = nil;
-				if Thaliz_IsInRaid() then
-					for n=1, GetNumRaidMembers(), 1 do
-						if UnitName("raid"..n) == ctra_player then
-							unitid = "raid"..n;
-							break;
-						end
-					end
-				else
-					for n=1, GetNumPartyMembers(), 1 do
-						if UnitName("party"..n) == ctra_player then
-							unitid = "party"..n;
-							break;
-						end
-					end				
-				end
-
+				local unitid = Thaliz_GetUnitID(ctra_player);
 				if unitid then
 					if UnitIsConnected(unitid) then
 						-- If unit is blacklisted we should NOT display the ress. message.
@@ -1311,15 +1294,16 @@ function Thaliz_HandleCTRAMessage(msg, sender)
 		end
 	end
 
-	-- "RESNO" is received when a res is cancelled 
+	-- Other ress events received:
+	-- "RESNO" is received when a res is cancelled/interrupted.
 	-- Do nothing.
 	-- Question: should we remove from blacklist in that case?
 	-- The cancellation could happen for two reasons (possibly more)
-	--	- Target is out of LOS for the resser (but maybe not for me!)
+	--	- Target is out of LOS for one resser (but maybe not for me!)
 	--	- Res was cancelled by movement or combat.
 	--		In this case we SHOULD remove from blacklist, but if in combat we cant ress anyway.
-	--	The problem here is we do not know WHO we was ressing!! We only have the SENDER name
-	--	which is the name of the RESSER!
+	--	The problem here is we do not know WHO we were attempting to ress!!
+	--	We only have the SENDER name which is the name of the RESSER!
 	
 	-- "NORESSED" is received when res timeout OR res is accepted!
 	-- Do nothing (the blacklist expires soon anyway)
