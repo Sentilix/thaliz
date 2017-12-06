@@ -6,6 +6,12 @@
 
 -- UI to display corpses / deaths - prioritised (a little like decursive)	
 	
+	
+TODO:
+- Store parameter (guild name etc) per token (same way as the group?)
+- Create AI to select random msg, based on player rules.
+
+
 ]]
 
 
@@ -26,6 +32,20 @@ local THALIZ_EMPTY_MESSAGE = "(Empty)"
 
 local THALIZ_CURRENT_VERSION = 0
 local THALIZ_UPDATE_MESSAGE_SHOWN = false
+
+local EMOTE_GROUP_DEFAULT = "Default";
+local EMOTE_GROUP_GUILD = "Guild";
+local EMOTE_GROUP_CHARACTER = "Name";
+local EMOTE_GROUP_CLASS = "Class";
+local EMOTE_GROUP_RACE = "Race";
+
+local EMOTE_GROUPS = {
+	EMOTE_GROUP_DEFAULT,
+	EMOTE_GROUP_GUILD,
+	EMOTE_GROUP_CHARACTER,
+	EMOTE_GROUP_CLASS,
+	EMOTE_GROUP_RACE
+}
 
 --	List of valid class names with priority and resurrection spell name (if any)
 local classInfo = {
@@ -69,27 +89,28 @@ Thaliz_Options = {}
 
 
 -- List of resurrection messages
+--	{ "Message", "Group", "Group parameter value" }
 local Thaliz_DefaultResurrectionMessages = {
-	"(Ressing) Stop slacking and get up, %s!",
-	"(Ressing) How many \'Z\'s are in Vaelastrasz, %s?",
-	"(Ressing) Did you just do the unsafety dance, %s?",
-	"(Ressing) I\'m keeping my eye on you, %s!",
-	"(Ressing) Too soon, %s - you have died too soon!",
-	"(Ressing) Cower, %s! The age of darkness is at hand!",
-	"(Ressing) %s! Death! Destruction!",
-	"(Ressing) No more play, %s?",
-	"(Ressing) Forgive me %s, your death only adds to my failure.",
-	"(Ressing) Your friends will abandon you, %s!",
-	"(Ressing) Slay %s in the masters name!",
-	"(Ressing) %s, Chuck Norris would have survived that!",
-	"(Ressing) %s, seems you ran out of health!",
-	"(Ressing) %s, you make the floor look dirty!",
-	"(Ressing) %s, there\'s loot waiting for you!",
-	"(Ressing) %s, you are too late... I... must... OBEY!",
-	"(Ressing) Shhh, %s... it will all be over soon.",
-	"(Ressing) %s! Cease this foolish venture at once!",
-	"(Ressing) Death is the only escape, %s.",
-	"(Ressing) The time for practice is over, %s!",
+	{ "(Ressing) Stop slacking and get up, %s!",						EMOTE_GROUPS[1], "" },
+	{ "(Ressing) How many \'Z\'s are in Vaelastrasz, %s?",				EMOTE_GROUPS[1], "" },
+	{ "(Ressing) Did you just do the unsafety dance, %s?",				EMOTE_GROUPS[1], "" },
+	{ "(Ressing) I\'m keeping my eye on you, %s!",						EMOTE_GROUPS[1], "" },
+	{ "(Ressing) Too soon, %s - you have died too soon!",				EMOTE_GROUPS[1], "" },
+	{ "(Ressing) Cower, %s! The age of darkness is at hand!",			EMOTE_GROUPS[1], "" },
+	{ "(Ressing) %s! Death! Destruction!",								EMOTE_GROUPS[1], "" },
+	{ "(Ressing) No more play, %s?",									EMOTE_GROUPS[1], "" },
+	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUPS[1], "" },
+	{ "(Ressing) Your friends will abandon you, %s!",					EMOTE_GROUPS[1], "" },
+	{ "(Ressing) Slay %s in the masters name!",							EMOTE_GROUPS[1], "" },
+	{ "(Ressing) %s, Chuck Norris would have survived that!",			EMOTE_GROUPS[1], "" },
+	{ "(Ressing) %s, seems you ran out of health!",						EMOTE_GROUPS[1], "" },
+	{ "(Ressing) %s, you make the floor look dirty!",					EMOTE_GROUPS[1], "" },
+	{ "(Ressing) %s, there\'s loot waiting for you!",					EMOTE_GROUPS[1], "" },
+	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUPS[1], "" },
+	{ "(Ressing) Shhh, %s... it will all be over soon.",				EMOTE_GROUPS[1], "" },
+	{ "(Ressing) %s! Cease this foolish venture at once!",				EMOTE_GROUPS[1], "" },
+	{ "(Ressing) Death is the only escape, %s.",						EMOTE_GROUPS[1], "" },
+	{ "(Ressing) The time for practice is over, %s!",					EMOTE_GROUPS[1], "" }
 }
 
 
@@ -254,20 +275,33 @@ end
 --
 --  *******************************************************
 function Thaliz_OpenConfigurationDialogue()
-	--Thaliz_RefreshVisibleMessageList(1);
-	
+	--Thaliz_RefreshVisibleMessageList(1);	
 	ThalizFrame:Show();
 end
 
 function Thaliz_RefreshVisibleMessageList(offset)
-	local resMsgs = Thaliz_GetResurrectionMessages();
+	--echo(string.format("Offset=%d", offset));
+	
+	local macros = Thaliz_GetResurrectionMessages();
 	for n=1, THALIZ_MAX_VISIBLE_MESSAGES, 1 do
-		local msg = resMsgs[n + offset];
-		local frame = getglobal("ThalizFrameTableListEntry"..n);
-		if not msg or msg == "" then
-			msg = THALIZ_EMPTY_MESSAGE;
+		local macro = macros[n + offset]
+		if type(macro) == "string" then
+			macro = { macro, EMOTE_GROUP_DEFAULT, "" }
 		end
+		if not macro then
+			macro = { "", EMOTE_GROUP_DEFAULT, "" }
+		end
+		
+		local msg = Thaliz_CheckMessage(macro[1]);
+		local grp = Thaliz_CheckGroup(macro[2]);
+		local prm = Thaliz_CheckGroupValue(macro[3]);
+		
+		--echo(string.format("-> Msg=%s, Grp=%s, Value=%s", msg, grp, prm));
+		
+		local frame = getglobal("ThalizFrameTableListEntry"..n);
 		getglobal(frame:GetName().."Message"):SetText(msg);
+		getglobal(frame:GetName().."Group"):SetText(grp);
+		getglobal(frame:GetName().."Param"):SetText(prm);
 		frame:Show();
 	end
 end
@@ -292,41 +326,73 @@ function Thaliz_InitializeListElements()
 	end
 end
 
+local currentObjectId;
 function Thaliz_OnMessageClick(object)
-	local msgID = object:GetID();
+	Thaliz_CloseMsgEditorButton_OnClick();
+
+	--local msgID = object:GetID();
+	currentObjectId = object:GetID();
 	local offset = FauxScrollFrame_GetOffset(ThalizFrameTableList);
 		
-	local message = getglobal(object:GetName().."Message"):GetText();
-	if not message or message == THALIZ_EMPTY_MESSAGE then
-		message = "";
+	local msg = getglobal(object:GetName().."Message"):GetText();
+	local grp = getglobal(object:GetName().."Group"):GetText();
+	local prm = getglobal(object:GetName().."Param"):GetText();
+	if not msg or msg == THALIZ_EMPTY_MESSAGE then
+		msg = "";
 	end
-		
-	StaticPopupDialogs["MessageEditor"] = {
-		text = "Update Resurrection message:",
-		hasEditBox = true,
-		hasWideEditBox = true,
-		hideOnEscape = true,
-		whileDead = true,
-		button1 = "Okay",
-		button2 = "Cancel",
-		timeout = 0,
-		maxLetters = 128,
-		EditBoxOnEnterPressed = function()
-			this:GetParent():Hide();
-			Thaliz_UpdateResurrectionMessage(msgID, offset, this:GetText());
-		end,
-		OnShow = function()	
-			local c = getglobal(this:GetName().."WideEditBox");
-			c:SetText(message);
-			this:SetWidth(410);
-		end,
-		OnAccept = function(self, data)
-			local c = getglobal(this:GetParent():GetName().."WideEditBox");			
-			Thaliz_UpdateResurrectionMessage(msgID, offset, c:GetText());
-		end
-	}
-		
-	StaticPopup_Show("MessageEditor");	
+	
+	grp = Thaliz_CheckGroup(grp);
+	prm = Thaliz_CheckGroupValue(prm);
+
+	local frame = getglobal("ThalizMsgEditorFrame");
+	--frame:SetText(msg);
+	getglobal(frame:GetName().."Message"):SetText(msg);
+	getglobal(frame:GetName().."GroupValue"):SetText(prm);
+
+	getglobal(frame:GetName().."CheckbuttonAlways"):SetChecked(0);		
+	getglobal(frame:GetName().."CheckbuttonGuild"):SetChecked(0);		
+	getglobal(frame:GetName().."CheckbuttonCharacter"):SetChecked(0);		
+	getglobal(frame:GetName().."CheckbuttonClass"):SetChecked(0);		
+	getglobal(frame:GetName().."CheckbuttonRace"):SetChecked(0);		
+
+	if grp == EMOTE_GROUP_GUILD then
+		getglobal(frame:GetName().."CheckbuttonGuild"):SetChecked(1);		
+	elseif grp == EMOTE_GROUP_CHARACTER then
+		getglobal(frame:GetName().."CheckbuttonCharacter"):SetChecked(1);		
+	elseif grp == EMOTE_GROUP_CLASS then
+		getglobal(frame:GetName().."CheckbuttonClass"):SetChecked(1);		
+	elseif grp == EMOTE_GROUP_RACE then
+		getglobal(frame:GetName().."CheckbuttonRace"):SetChecked(1);		
+	else
+		getglobal(frame:GetName().."CheckbuttonAlways"):SetChecked(1);
+	end
+	
+	ThalizMsgEditorFrame:Show();
+end
+
+
+function Thaliz_SaveMessageButton_OnClick()
+	local msg = getglobal("ThalizMsgEditorFrameMessage"):GetText();
+	local prm = getglobal("ThalizMsgEditorFrameGroupValue"):GetText();
+	local grp;
+	local offset = FauxScrollFrame_GetOffset(ThalizFrameTableList);
+
+	if getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):GetChecked() then
+		grp = EMOTE_GROUP_GUILD;
+	elseif getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):GetChecked() then
+		grp = EMOTE_GROUP_CHARACTER;
+	elseif getglobal("ThalizMsgEditorFrameCheckbuttonClass"):GetChecked() then
+		grp = EMOTE_GROUP_CLASS;
+	elseif getglobal("ThalizMsgEditorFrameCheckbuttonRace"):GetChecked() then
+		grp = EMOTE_GROUP_RACE;
+	else
+		grp = EMOTE_GROUP_DEFAULT;
+	end;
+
+	--echo(string.format("Saving, ID=%d, Offset=%d, Msg=%s, Grp=%s, Val=%s", currentObjectId, offset, msg, grp, prm));
+	Thaliz_CloseMsgEditorButton_OnClick();	
+	Thaliz_UpdateResurrectionMessage(currentObjectId, offset, msg, grp, prm);
+	Thaliz_UpdateMessageList();
 end
 
 
@@ -369,6 +435,43 @@ function Thaliz_HandleCheckbox(checkbox)
 		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Realm");
 	end	
 	
+	-- Emote Groups:
+	if checkboxname == "ThalizMsgEditorFrameCheckbuttonAlways" then	
+		if checkbox:GetChecked() then
+			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonClass"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonRace"):SetChecked(0);
+		end;
+	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonGuild" then	
+		if checkbox:GetChecked() then
+			getglobal("ThalizMsgEditorFrameCheckbuttonAlways"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonClass"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonRace"):SetChecked(0);
+		end;
+	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonCharacter" then	
+		if checkbox:GetChecked() then
+			getglobal("ThalizMsgEditorFrameCheckbuttonAlways"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonClass"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonRace"):SetChecked(0);
+		end;
+	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonClass" then	
+		if checkbox:GetChecked() then
+			getglobal("ThalizMsgEditorFrameCheckbuttonAlways"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonRace"):SetChecked(0);
+		end;
+	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonRace" then	
+		if checkbox:GetChecked() then
+			getglobal("ThalizMsgEditorFrameCheckbuttonAlways"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):SetChecked(0);
+			getglobal("ThalizMsgEditorFrameCheckbuttonClass"):SetChecked(0);
+		end;
+	end;
 end
 
 
@@ -479,25 +582,166 @@ function Thaliz_InitializeConfigSettings()
 		getglobal("ThalizFrameCheckbuttonPerCharacter"):SetChecked(1)
 	end    
 	
+	Thaliz_ValidateResurrectionMessages();
 end
 
+function Thaliz_ValidateResurrectionMessages()
+	local macros = Thaliz_GetResurrectionMessages();
+	local changed = False;
+	
+	for n=1, table.getn( macros ), 1 do
+		local macro = macros[n];
+		
+		if type(macro) == "table" then
+			-- Macro is fine; do nothing
+		elseif type(macro) == "string" then
+			-- <v1.4 macro: convert to 1.4:
+			macros[n] = { macro, EMOTE_GROUP_DEFAULT, "" }
+			changed = True;
+		else
+			macros[n] = { "", EMOTE_GROUP_DEFAULT, "" }
+			changed = True;
+		end
+	end;
+
+	if changed then	
+		Thaliz_SetResurrectionMessages(macros);	
+	end;
+end;
+
+
+function Thaliz_GetUnitID(playername)
+	local groupsize, grouptype;
+		
+	if Thaliz_IsInRaid() then
+		groupsize = GetNumRaidMembers();
+		grouptype = "raid";	
+	elseif Thaliz_IsInParty() then
+		groupsize = GetNumPartyMembers();
+		grouptype = "party";
+	else
+		return nil;
+	end
+
+	for n=1, groupsize, 1 do
+		unitid = grouptype..n
+		if UnitName(unitid) == playername then
+			return unitid;
+		end
+	end
+
+	return nil;
+end
 
 --  *******************************************************
 --
 --	Resurrect message functions
 --
 --  *******************************************************
-function Thaliz_AnnounceResurrection(playername)
+function Thaliz_AnnounceResurrection(playername, unitid)
 	if not Thaliz_Enabled then
 		return;
 	end
 
 	--echo("Announcing resurrection on "..playername);
+	if not unitid then
+		unitid = Thaliz_GetUnitID(playername);			
+		
+		if not unitid then
+			return;
+		end
+	end
+	
+	
+	local guildname = GetGuildInfo(unitid);
+	local race = string.upper(UnitRace(unitid));
+	local class = string.upper(UnitClass(unitid));
+	local charname = string.upper(playername);
+	guildname = string.upper(guildname);
+
+	--echo(string.format("Ressing: player=%s, unitid=%s", playername, unitid));
+	--echo(string.format("Guild=%s, class=%s, race=%s", guildname, class, race));
+
+	-- This is a list of ALL messages.
+	-- Now identify the macros suitable for this player only:
+	local dmacro = { }		-- Default macros
+	local gmacro = { }		-- Guild macros
+	local nmacro = { }		-- character Name macros
+	local cmacro = { }		-- Class macros
+	local rmacro = { }		-- Race macros
+	
+	local didx = 0;
+	local gidx = 0;
+	local nidx = 0;
+	local cidx = 0;
+	local ridx = 0;
+	
+	local macros = Thaliz_GetResurrectionMessages();
+	for n=1, table.getn( macros ), 1 do
+		local macro = macros[n];
+		local param = "";
+		if macro[3] then
+			param = string.upper(macro[3]);
+		end
+		
+		if macro[2] == EMOTE_GROUP_DEFAULT then
+			didx = didx + 1;
+			dmacro[ didx ] = macro;
+		elseif macro[2] == EMOTE_GROUP_GUILD then
+			if param == guildname then
+				gidx = gidx + 1;
+				gmacro[ gidx ] = macro;
+			end
+		elseif macro[2] == EMOTE_GROUP_CHARACTER then
+			if param == charname then
+				nidx = nidx + 1;
+				nmacro[ nidx ] = macro;
+			end
+		elseif macro[2] == EMOTE_GROUP_CLASS then
+			if param == class then
+				cidx = cidx + 1;
+				cmacro[ cidx ] = macro;
+			end
+		elseif macro[2] == EMOTE_GROUP_RACE then
+			if param == race then
+				ridx = ridx + 1;
+				rmacro[ ridx ] = macro;
+			end
+		end;		
+	end
+	
+	-- Now generate list, using the found criterias above:
+	local macros = { }
+	local index = 0;
+	for n=1, table.getn( gmacro ), 1 do
+		index = index + 1;
+		macros[index] = gmacro[n];
+	end
+	for n=1, table.getn( nmacro ), 1 do
+		index = index + 1;
+		macros[index] = nmacro[n];
+	end
+	for n=1, table.getn( cmacro ), 1 do
+		index = index + 1;
+		macros[index] = cmacro[n];
+	end
+	for n=1, table.getn( rmacro ), 1 do
+		index = index + 1;
+		macros[index] = rmacro[n];
+	end
+	-- No macros matching rules; use the default set:
+	if table.getn(macros) == 0 then
+		macros = dmacro;
+	end;
+
+
+	
 	local validMessages = {}
 	local validCount = 0;
-	local resMsgs = Thaliz_GetResurrectionMessages();
-	for n=1, table.getn( resMsgs ), 1 do
-		local msg = resMsgs[n];
+	for n=1, table.getn( macros ), 1 do
+		local msg = macros[n][1];
+		local grp = macros[n][2];
+		-- TODO: Check GRP to see match!
 		if msg and not (msg == "") then
 			validCount = validCount + 1;
 			validMessages[ validCount ] = msg;
@@ -527,10 +771,19 @@ end
 
 function Thaliz_GetResurrectionMessages()
 	local messages = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessages, nil);
-	
+
 	if (not messages) or not(type(messages) == "table") or (table.getn(messages) == 0) then
 		messages = Thaliz_ResetResurrectionMessages(); 
 	end
+
+	-- Check if messages contains tables; this is to keep backwards compatibility with 1.3:
+	if not type(messages[1]) == "table" then
+		echo('Converting table from v1.3 to v1.4 ...');
+		for key, value in messages do
+			messages[key] = { messages[key], EMOTE_GROUPS[1], "" }
+		end
+		Thaliz_SetResurrectionMessages(messages);
+	end;
 	
 	return messages;
 end
@@ -556,23 +809,49 @@ function Thaliz_ResetResurrectionMessages()
 	return Thaliz_DefaultResurrectionMessages;
 end
 
-function Thaliz_AddResurrectionMessage(message)
+function Thaliz_AddResurrectionMessage(message, group, param)
 	if message and not (message == "") then
-		--echo("Adding resurrection message: "..message);
+		group = Thaliz_CheckGroup(group);
+		param = Thaliz_CheckGroupValue(param);
+
+		--echo(string.format("Adding Res.Msg: msg=%s, grp=%s, val=%s", message, group, param));
+
 		local resMsgs = Thaliz_GetResurrectionMessages();		
-		resMsgs[ table.getn(resMsgs) + 1] = message;
+		resMsgs[ table.getn(resMsgs) + 1] = { message, group, param }
 		
 		Thaliz_SetResurrectionMessages(resMsgs);
 	end
 end
 
+function Thaliz_CheckMessage(msg)
+	if not msg or msg == "" then
+		msg = THALIZ_EMPTY_MESSAGE;
+	end
+	return msg;
+end
 
+function Thaliz_CheckGroup(group)
+	if not group or group == "" then
+		group = EMOTE_GROUPS[1];
+	end
+	return group;
+end
 
-function Thaliz_UpdateResurrectionMessage(index, offset, message)
-	--echo(string.format("Updating message, Index=%d, offset=%d, msg=%s", index, offset, message));
+function Thaliz_CheckGroupValue(param)
+	if not param then
+		param = "";
+	end
+	return param;
+end
+
+function Thaliz_UpdateResurrectionMessage(index, offset, message, group, param)
+	group = Thaliz_CheckGroup(group);
+	param = Thaliz_CheckGroupValue(param);
+	--echo(string.format("Updating message, Index=%d, offset=%d, msg=%s, grp=%s, val=%s", index, offset, message, group, param));
 
 	local messages = Thaliz_GetResurrectionMessages();
-	messages[index + offset] = message;
+	messages[index + offset] = { message, group, param }
+	
 	Thaliz_SetResurrectionMessages( messages );
 
 	--	Update the frame UI:
@@ -581,6 +860,7 @@ function Thaliz_UpdateResurrectionMessage(index, offset, message)
 		message = THALIZ_EMPTY_MESSAGE;
 	end
 	getglobal(frame:GetName().."Message"):SetText(message);
+	getglobal(frame:GetName().."Param"):SetText(param);
 end
 
 
@@ -689,7 +969,7 @@ function Thaliz_StartResurrectionOnPriorityTarget()
 		SpellTargetUnit(unitid);
 		if not SpellIsTargeting() then
 			Thaliz_BlacklistPlayer(playername);
-			Thaliz_AnnounceResurrection(playername);
+			Thaliz_AnnounceResurrection(playername, unitid);
 			Thaliz_SendAddonMessage("TX_RESBEGIN#"..playername.."#");
 		else
 			SpellStopTargeting();
@@ -1057,8 +1337,7 @@ function Thaliz_OnEvent(event)
 	if (event == "ADDON_LOADED") then
 		if arg1 == "Thaliz" then
 		    Thaliz_InitializeConfigSettings();
-		end
-		
+		end		
 	elseif (event == "CHAT_MSG_ADDON") then
 		Thaliz_OnChatMsgAddon(event, arg1, arg2, arg3, arg4, arg5)
 	elseif (event == "RAID_ROSTER_UPDATE") then
@@ -1078,6 +1357,11 @@ function Thaliz_OnLoad()
 end
 
 function Thaliz_CloseButton_OnClick()
+	ThalizMsgEditorFrame:Hide();
 	ThalizFrame:Hide();
 	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
+end
+
+function Thaliz_CloseMsgEditorButton_OnClick()
+	ThalizMsgEditorFrame:Hide();
 end

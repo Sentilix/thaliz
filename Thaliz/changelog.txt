@@ -1,4 +1,9 @@
 
+Release 1.4.0 (2017-12-xx)
+--------------------------
+Added: Configurations can now be set for guild/name/class/race.
+
+
 Release 1.3.0 (2017-10-01)
 --------------------------
 Bugfix: Raid/Say/Yell is not reset when whisper is de-selected.
