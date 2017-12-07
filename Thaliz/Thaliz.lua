@@ -8,6 +8,10 @@ https://armory.digam.dk/thaliz
 The source code can be found at Github:
 https://github.com/Sentilix/thaliz
 
+
+TODO:
+* Customizable ress whisper
+
 ]]
 
 
@@ -29,11 +33,11 @@ local THALIZ_EMPTY_MESSAGE = "(Empty)"
 local THALIZ_CURRENT_VERSION = 0
 local THALIZ_UPDATE_MESSAGE_SHOWN = false
 
-local EMOTE_GROUP_DEFAULT = "Default";
-local EMOTE_GROUP_GUILD = "Guild";
+local EMOTE_GROUP_DEFAULT	= "Default";
+local EMOTE_GROUP_GUILD		= "Guild";
 local EMOTE_GROUP_CHARACTER = "Name";
-local EMOTE_GROUP_CLASS = "Class";
-local EMOTE_GROUP_RACE = "Race";
+local EMOTE_GROUP_CLASS		= "Class";
+local EMOTE_GROUP_RACE		= "Race";
 
 --	List of valid class names with priority and resurrection spell name (if any)
 local classInfo = {
@@ -268,13 +272,69 @@ end
 
 function Thaliz_RefreshVisibleMessageList(offset)
 	--echo(string.format("Offset=%d", offset));
-	
 	local macros = Thaliz_GetResurrectionMessages();
-	for n=1, THALIZ_MAX_VISIBLE_MESSAGES, 1 do
-		local macro = macros[n + offset]
-		if type(macro) == "string" then
-			macro = { macro, EMOTE_GROUP_DEFAULT, "" }
+	
+	-- Set a priority on each spell, and then sort them accordingly:
+	local macro, grp, prm, prio
+	for n=1, table.getn(macros), 1 do
+		grp = macros[n][2];
+		prm = macros[n][3];
+		if grp == EMOTE_GROUP_GUILD then
+			prio = 20
+		elseif grp == EMOTE_GROUP_CHARACTER then
+			prio = 30
+		elseif grp == EMOTE_GROUP_CLASS then
+			-- Class names are listed alphabetically:
+			prio = 50		
+			if prm == "Druid" then
+				prio = 59
+			elseif prm == "Hunter" then
+				prio = 58
+			elseif prm == "Mage" then
+				prio = 57
+			elseif prm == "Paladin" then
+				prio = 56
+			elseif prm == "Priest" then
+				prio = 55
+			elseif prm == "Rogue" then
+				prio = 54
+			elseif prm == "Shaman" then
+				prio = 53
+			elseif prm == "Warlock" then
+				prio = 52
+			elseif prm == "Warrior" then
+				prio = 51
+			end;			
+		elseif grp == EMOTE_GROUP_RACE then
+			prio = 40
+			-- Racess are listed by faction, race name:
+			if prm == "Dwarf" then
+				prio = 49
+			elseif prm == "Gnome" then
+				prio = 48
+			elseif prm == "Human" then
+				prio = 47
+			elseif prm == "Night Elf" then
+				prio = 46
+			elseif prm == "Orc" then
+				prio = 45
+			elseif prm == "Tauren" then
+				prio = 44
+			elseif prm == "Troll" then
+				prio = 43
+			elseif prm == "Undead" then
+				prio = 42
+			end;			
+		elseif grp == EMOTE_GROUP_DEFAULT then
+			prio = 0
 		end
+		macros[n][4] = prio;		
+	end
+	
+	Thaliz_SortTableDescending(macros, 4);
+	
+	for n=1, THALIZ_MAX_VISIBLE_MESSAGES, 1 do
+		macro = macros[n + offset]
 		if not macro then
 			macro = { "", EMOTE_GROUP_DEFAULT, "" }
 		end

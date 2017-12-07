@@ -22,7 +22,7 @@
 				</FontString>
 				<FontString name="$parentGroup" justifyH="LEFT" inherits="GameFontNormal">
 					<Size>
-						<AbsDimension x="90" y="16"/>
+						<AbsDimension x="70" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -34,12 +34,12 @@
 				</FontString>
 				<FontString name="$parentParam" justifyH="LEFT" inherits="GameFontNormal">
 					<Size>
-						<AbsDimension x="90" y="16"/>
+						<AbsDimension x="110" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="520" y="0"/>
+								<AbsDimension x="500" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
