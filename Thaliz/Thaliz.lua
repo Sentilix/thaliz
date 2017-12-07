@@ -289,6 +289,53 @@ function Thaliz_RefreshVisibleMessageList(offset)
 		getglobal(frame:GetName().."Message"):SetText(msg);
 		getglobal(frame:GetName().."Group"):SetText(grp);
 		getglobal(frame:GetName().."Param"):SetText(prm);
+		
+		local grpColor = { 0.5, 0.5, 0.5 }
+		local prmColor = { 0.5, 0.5, 0.5 }
+		
+		prm = string.upper(prm);
+		
+		if grp == EMOTE_GROUP_GUILD then
+			grpColor = { 0.0, 1.0, 0.0 }
+			prmColor = { 0.8, 0.8, 0.0 }
+		elseif grp == EMOTE_GROUP_CHARACTER then
+			grpColor = { 0.8, 0.8, 0.8 }
+			prmColor = { 0.8, 0.8, 0.0 }
+		elseif grp == EMOTE_GROUP_CLASS then
+			grpColor = { 0.8, 0.0, 1.0 }
+			
+			if prm == "DRUID" then
+				prmColor = { 1.00, 0.49, 0.04 }
+			elseif prm == "HUNTER" then
+				prmColor = { 0.67, 0.83, 0.45 }
+			elseif prm == "MAGE" then
+				prmColor = { 0.41, 0.80, 0.94 }
+			elseif prm == "PALADIN" then
+				prmColor = { 0.96, 0.55, 0.73 }
+			elseif prm == "PRIEST" then
+				prmColor = { 1.00, 1.00, 1.00 }
+			elseif prm == "ROGUE" then
+				prmColor = { 1.00, 0.96, 0.41 }
+			elseif prm == "SHAMAN" then
+				prmColor = { 0.96, 0.55, 0.73 }
+			elseif prm == "WARLOCK" then
+				prmColor = { 0.58, 0.51, 0.79 }
+			elseif prm == "WARRIOR" then
+				prmColor = { 0.78, 0.61, 0.43 }
+			end;			
+		elseif grp == EMOTE_GROUP_RACE then
+			grpColor = { 0.80, 0.80, 0.00 }			
+			if prm == "DWARF" or prm == "GNOME" or prm == "HUMAN"  or prm == "NIGHT ELF" then
+				grpColor = { 0.00, 0.50, 1.00 }
+			elseif prm == "ORC" or prm == "TAUREN" or prm == "TROLL"  or prm == "UNDEAD" then
+				grpColor = { 1.00, 0.00, 0.00 }
+			end
+			prmColor = grpColor;
+		end;
+		
+		getglobal(frame:GetName().."Group"):SetTextColor(grpColor[1], grpColor[2], grpColor[3]);
+		getglobal(frame:GetName().."Param"):SetTextColor(prmColor[1], prmColor[2], prmColor[3]);
+		
 		frame:Show();
 	end
 end
@@ -371,6 +418,19 @@ function Thaliz_SaveMessageButton_OnClick()
 	else
 		grp = EMOTE_GROUP_DEFAULT;
 	end;
+
+	if	grp == EMOTE_GROUP_CHARACTER or 
+		grp == EMOTE_GROUP_CLASS then
+		prm = Thaliz_UCFirst(prm)
+	elseif grp == EMOTE_GROUP_RACE then
+		-- Allow both "nightelf" and "night elf".
+		-- This weird construction ensures all are shown with capital first letter.
+		if string.upper(prm) == "NIGHTELF" or string.upper(prm) == "NIGHT ELF" then
+			prm = "Night Elf"
+		else
+			prm = Thaliz_UCFirst(prm)
+		end;
+	end
 
 	--echo(string.format("Saving, ID=%d, Offset=%d, Msg=%s, Grp=%s, Val=%s", currentObjectId, offset, msg, grp, prm));
 	Thaliz_CloseMsgEditorButton_OnClick();	
@@ -544,7 +604,6 @@ function Thaliz_SetOption(parameter, value)
 end
 
 function Thaliz_InitializeConfigSettings()
-
 	if not Thaliz_Options then
 		Thaliz_options = { };
 	end
@@ -620,6 +679,19 @@ function Thaliz_GetUnitID(playername)
 	end
 
 	return nil;
+end
+
+--[[
+	Convert a msg so first letter is uppercase, and rest as lower case.
+]]
+function Thaliz_UCFirst(msg)
+	if not msg then
+		return ""
+	end	
+
+	local f = string.sub(msg, 1, 1)
+	local r = string.sub(msg, 2)
+	return string.upper(f) .. string.lower(r)
 end
 
 
