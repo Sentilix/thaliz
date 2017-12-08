@@ -1,6 +1,6 @@
 ﻿--[[
 Author:			Mimma
-Create Date:	05/10/2015 17:50:57
+Create Date:	2015-05-10 17:50:57
 
 The latest version of Thaliz can always be found at:
 https://armory.digam.dk/thaliz
@@ -8,10 +8,7 @@ https://armory.digam.dk/thaliz
 The source code can be found at Github:
 https://github.com/Sentilix/thaliz
 
-
-TODO:
-* Customizable ress whisper
-
+Please see the ReadMe.txt for addon details.
 ]]
 
 
@@ -67,6 +64,7 @@ local Thaliz_Enabled = true;
 local Thaliz_Configuration_Default_Level = "Character";	-- Can be "Character" or "Realm"
 local Thaliz_Target_Channel_Default = "RAID";
 local Thaliz_Target_Whisper_Default = "0";
+local Thaliz_Resurrection_Whisper_Message_Default = "Resurrection incoming in 10 seconds!";
 
 local Thaliz_ConfigurationLevel = Thaliz_Configuration_Default_Level;
 
@@ -74,6 +72,7 @@ local Thaliz_ROOT_OPTION_CharacterBasedSettings = "CharacterBasedSettings";
 local Thaliz_OPTION_ResurrectionMessageTargetChannel = "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper = "ResurrectionMessageTargetWhisper";
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup = "AlwaysIncludeDefaultGroup";
+local Thaliz_OPTION_ResurrectionWhisperMessage = "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages = "ResurrectionMessages";
 
 
@@ -267,6 +266,9 @@ end
 --
 --  *******************************************************
 function Thaliz_OpenConfigurationDialogue()
+	local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
+	getglobal("ThalizFrameWhisper"):SetText(whisperMsg);
+
 	ThalizFrame:Show();
 end
 
@@ -673,6 +675,8 @@ function Thaliz_InitializeConfigSettings()
 	
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
+	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
+
 
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
 		getglobal("ThalizFrameCheckbuttonRaid"):SetChecked(1)
@@ -898,7 +902,10 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	end
 	
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
-		SendChatMessage("Resurrection incoming in 10 seconds!", "WHISPER", nil, playername);
+		local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
+		if whisperMsg and not(whisperMsg == "") then
+			SendChatMessage(whisperMsg, "WHISPER", nil, playername);
+		end;
 	end
 end
 
@@ -1472,10 +1479,22 @@ function Thaliz_OnLoad()
     Thaliz_InitializeListElements();
 end
 
+
+
+function Thaliz_OKButton_OnClick()
+	ThalizMsgEditorFrame:Hide();
+	ThalizFrame:Hide();
+	
+	local whisperMsg = getglobal("ThalizFrameWhisper"):GetText(whisperMsg);
+	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, whisperMsg);
+	
+	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
+end
+
 function Thaliz_CloseButton_OnClick()
 	ThalizMsgEditorFrame:Hide();
 	ThalizFrame:Hide();
-	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
+--	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
 end
 
 function Thaliz_CloseMsgEditorButton_OnClick()

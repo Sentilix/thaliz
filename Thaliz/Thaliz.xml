@@ -69,7 +69,7 @@
 	<!-- Main configuration frame -->
 	<Frame name="ThalizFrame" parent="UIParent" toplevel="true" hidden="true">
 		<Size>
-			<AbsDimension x="690" y="460" />
+			<AbsDimension x="690" y="492" />
 		</Size>
 		<Anchors>
 			<Anchor point="TOPLEFT">
@@ -179,7 +179,7 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
 						<Offset x="16" y="-386"/>
@@ -187,22 +187,22 @@
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Text"):SetText("Whisper the Target")
+						getglobal(this:GetName().."Text"):SetText("Store macro's per Character")
 					</OnLoad>
 					<OnClick>
 						Thaliz_HandleCheckbox(this);
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-			<CheckButton name="$parentCheckbuttonPerCharacter" inherits="OptionsCheckButtonTemplate">
+			<CheckButton name="$parentCheckbuttonWhisper" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="272" y="-386"/>
+						<Offset x="16" y="-418"/>
 					</Anchor>
 				</Anchors>
 				<Scripts>
 					<OnLoad>
-						getglobal(this:GetName().."Text"):SetText("Store per Character")
+						getglobal(this:GetName().."Text"):SetText("Whisper the Target with ...")
 					</OnLoad>
 					<OnClick>
 						Thaliz_HandleCheckbox(this);
@@ -210,6 +210,32 @@
 				</Scripts>
 			</CheckButton>
 
+			<!-- Whisper input field -->
+			<EditBox name="$parentWhisper" letters="120">
+				<Size>
+					<AbsDimension x="436" y="20"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="200" y="-422"/>
+					</Anchor>
+				</Anchors>
+				<FontString inherits="GameFontNormal"/>
+			</EditBox>
+			<!-- OK button -->
+			<Button name="CloseButton" inherits="UIPanelButtonTemplate" movable="true" text="OK">
+				<Size>
+					<AbsDimension x="100" y="23" />
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="245" y="-456" />
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnClick>Thaliz_OKButton_OnClick();</OnClick>
+				</Scripts>
+			</Button>
 			<!-- Close button -->
 			<Button name="CloseButton" inherits="UIPanelButtonTemplate" movable="true" text="Close">
 				<Size>
@@ -217,7 +243,7 @@
 				</Size>
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="295" y="-424" />
+						<Offset x="350" y="-456" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -248,6 +274,43 @@
 						</Anchor>
 					</Anchors>
 				</FontString>
+				<!-- Whisper EditBox border -->
+				<Texture name="$parentTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT">
+							<Offset>
+								<AbsDimension x="188" y="-187"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0" right="0.125" top="0" borrom="1.0"/>
+				</Texture>
+				<Texture name="$parentTextureRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+					<Size>
+						<AbsDimension x="32" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="RIGHT">
+							<Offset>
+								<AbsDimension x="-42" y="-187"/>
+							</Offset>
+						</Anchor>
+					</Anchors>
+					<TexCoords left="0.875" right="1.0" top="0" borrom="1.0"/>
+				</Texture>
+				<Texture name="$parentTextureCenter" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
+					<Size>
+						<AbsDimension x="1" y="32"/>
+					</Size>
+					<Anchors>
+						<Anchor point="LEFT" relativeTo="$parentTextureLeft" relativePoint="RIGHT"/>
+						<Anchor point="RIGHT" relativeTo="$parentTextureRight" relativePoint="LEFT"/>
+					</Anchors>
+					<TexCoords left="0" right="0.9375" top="0" borrom="1.0"/>
+				</Texture>
 			</Layer>
 		</Layers>
 		<Scripts>
