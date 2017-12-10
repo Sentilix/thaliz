@@ -22,7 +22,7 @@
 				</FontString>
 				<FontString name="$parentGroup" justifyH="LEFT" inherits="GameFontNormal">
 					<Size>
-						<AbsDimension x="70" y="16"/>
+						<AbsDimension x="60" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
@@ -34,12 +34,12 @@
 				</FontString>
 				<FontString name="$parentParam" justifyH="LEFT" inherits="GameFontNormal">
 					<Size>
-						<AbsDimension x="110" y="16"/>
+						<AbsDimension x="120" y="16"/>
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="500" y="0"/>
+								<AbsDimension x="490" y="0"/>
 							</Offset>
 						</Anchor>
 					</Anchors>
@@ -116,8 +116,7 @@
 						Thaliz_UpdateMessageList()
 					</OnShow>
 				</Scripts>
-			</ScrollFrame>
-			
+			</ScrollFrame>			
 			<!-- Radio buttons for chat destination -->
 			<CheckButton name="$parentCheckbuttonRaid" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
@@ -209,7 +208,6 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
-
 			<!-- Whisper input field -->
 			<EditBox name="$parentWhisper" letters="120">
 				<Size>
@@ -221,6 +219,18 @@
 					</Anchor>
 				</Anchors>
 				<FontString inherits="GameFontNormal"/>
+				<Scripts>
+					<OnLoad>
+						this:RegisterEvent("OnEnterPressed")
+						this:RegisterEvent("OnEscapePressed")
+					</OnLoad>
+					<OnEnterPressed>
+						Thaliz_OKButton_OnClick()
+					</OnEnterPressed>
+					<OnEscapePressed>
+						Thaliz_CloseButton_OnClick()
+					</OnEscapePressed>
+				</Scripts>
 			</EditBox>
 			<!-- OK button -->
 			<Button name="CloseButton" inherits="UIPanelButtonTemplate" movable="true" text="OK">

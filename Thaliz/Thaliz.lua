@@ -421,6 +421,7 @@ function Thaliz_InitializeListElements()
 end
 
 local currentObjectId;	-- A small hack: the object ID is lost when using own frame
+local msgEditorIsOpen;
 function Thaliz_OnMessageClick(object)
 	Thaliz_CloseMsgEditorButton_OnClick();
 
@@ -459,23 +460,25 @@ function Thaliz_OnMessageClick(object)
 		getglobal(frame:GetName().."CheckbuttonAlways"):SetChecked(1);
 	end
 	
+	msgEditorIsOpen = true;
 	ThalizMsgEditorFrame:Show();
+	ThalizMsgEditorFrameMessage:SetFocus();
 end
 
 
 function Thaliz_SaveMessageButton_OnClick()
-	local msg = getglobal("ThalizMsgEditorFrameMessage"):GetText();
-	local prm = getglobal("ThalizMsgEditorFrameGroupValue"):GetText();
+	local msg = ThalizMsgEditorFrameMessage:GetText();
+	local prm = ThalizMsgEditorFrameGroupValue:GetText();
 	local grp;
 	local offset = FauxScrollFrame_GetOffset(ThalizFrameTableList);
 
-	if getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):GetChecked() then
+	if ThalizMsgEditorFrameCheckbuttonGuild:GetChecked() then
 		grp = EMOTE_GROUP_GUILD;
-	elseif getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):GetChecked() then
+	elseif ThalizMsgEditorFrameCheckbuttonCharacter:GetChecked() then
 		grp = EMOTE_GROUP_CHARACTER;
-	elseif getglobal("ThalizMsgEditorFrameCheckbuttonClass"):GetChecked() then
+	elseif ThalizMsgEditorFrameCheckbuttonClass:GetChecked() then
 		grp = EMOTE_GROUP_CLASS;
-	elseif getglobal("ThalizMsgEditorFrameCheckbuttonRace"):GetChecked() then
+	elseif ThalizMsgEditorFrameCheckbuttonRace:GetChecked() then
 		grp = EMOTE_GROUP_RACE;
 	else
 		grp = EMOTE_GROUP_DEFAULT;
@@ -509,39 +512,39 @@ function Thaliz_HandleCheckbox(checkbox)
 		if checkbox:GetChecked() then
 			if checkboxname == "ThalizFrameCheckbuttonRaid" then
 				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "RAID");
-				getglobal("ThalizFrameCheckbuttonSay"):SetChecked(0);
-				getglobal("ThalizFrameCheckbuttonYell"):SetChecked(0);
+				ThalizFrameCheckbuttonSay:SetChecked(0);
+				ThalizFrameCheckbuttonYell:SetChecked(0);
 			elseif checkboxname == "ThalizFrameCheckbuttonYell" then
 				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "YELL");
-				getglobal("ThalizFrameCheckbuttonSay"):SetChecked(0);
-				getglobal("ThalizFrameCheckbuttonRaid"):SetChecked(0);
+				ThalizFrameCheckbuttonSay:SetChecked(0);
+				ThalizFrameCheckbuttonRaid:SetChecked(0);
 			elseif checkboxname == "ThalizFrameCheckbuttonSay" then
 				Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "SAY");
-				getglobal("ThalizFrameCheckbuttonRaid"):SetChecked(0);
-				getglobal("ThalizFrameCheckbuttonYell"):SetChecked(0);
+				ThalizFrameCheckbuttonRaid:SetChecked(0);
+				ThalizFrameCheckbuttonYell:SetChecked(0);
 			end
 		else
 			Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, "NONE");
-			getglobal("ThalizFrameCheckbuttonRaid"):SetChecked(0);
-			getglobal("ThalizFrameCheckbuttonSay"):SetChecked(0);
-			getglobal("ThalizFrameCheckbuttonYell"):SetChecked(0);
+			ThalizFrameCheckbuttonRaid:SetChecked(0);
+			ThalizFrameCheckbuttonSay:SetChecked(0);
+			ThalizFrameCheckbuttonYell:SetChecked(0);
 		end
 	end
 
 	-- "single" checkboxes (checkboxes with no impact on other checkboxes):
-	if getglobal("ThalizFrameCheckbuttonWhisper"):GetChecked() then
+	if ThalizFrameCheckbuttonWhisper:GetChecked() then
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 1);
 	else
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 0);
 	end	
 	
-	if getglobal("ThalizFrameCheckbuttonIncludeDefault"):GetChecked() then
+	if ThalizFrameCheckbuttonIncludeDefault:GetChecked() then
 		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 1);
 	else
 		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 0);
 	end	
 		
-	if getglobal("ThalizFrameCheckbuttonPerCharacter"):GetChecked() then
+	if ThalizFrameCheckbuttonPerCharacter:GetChecked() then
 		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Character");
 	else
 		Thaliz_SetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, "Realm");
@@ -551,38 +554,38 @@ function Thaliz_HandleCheckbox(checkbox)
 	-- Emote Groups: Only one can be active:
 	if checkboxname == "ThalizMsgEditorFrameCheckbuttonAlways" then	
 		if checkbox:GetChecked() then
-			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonClass"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonRace"):SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonGuild:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonCharacter:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonClass:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonRace:SetChecked(0);
 		end;
 	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonGuild" then	
 		if checkbox:GetChecked() then
-			getglobal("ThalizMsgEditorFrameCheckbuttonAlways"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonClass"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonRace"):SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonAlways:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonCharacter:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonClass:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonRace:SetChecked(0);
 		end;
 	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonCharacter" then	
 		if checkbox:GetChecked() then
-			getglobal("ThalizMsgEditorFrameCheckbuttonAlways"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonClass"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonRace"):SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonAlways:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonGuild:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonClass:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonRace:SetChecked(0);
 		end;
 	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonClass" then	
 		if checkbox:GetChecked() then
-			getglobal("ThalizMsgEditorFrameCheckbuttonAlways"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonRace"):SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonAlways:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonGuild:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonCharacter:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonRace:SetChecked(0);
 		end;
 	elseif checkboxname == "ThalizMsgEditorFrameCheckbuttonRace" then	
 		if checkbox:GetChecked() then
-			getglobal("ThalizMsgEditorFrameCheckbuttonAlways"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonGuild"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonCharacter"):SetChecked(0);
-			getglobal("ThalizMsgEditorFrameCheckbuttonClass"):SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonAlways:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonGuild:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonCharacter:SetChecked(0);
+			ThalizMsgEditorFrameCheckbuttonClass:SetChecked(0);
 		end;
 	end;
 end
@@ -679,19 +682,19 @@ function Thaliz_InitializeConfigSettings()
 
 
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
-		getglobal("ThalizFrameCheckbuttonRaid"):SetChecked(1)
+		ThalizFrameCheckbuttonRaid:SetChecked(1)
 	end
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "SAY" then
-		getglobal("ThalizFrameCheckbuttonSay"):SetChecked(1)
+		ThalizFrameCheckbuttonSay:SetChecked(1)
 	end
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "YELL" then
-		getglobal("ThalizFrameCheckbuttonYell"):SetChecked(1)
+		ThalizFrameCheckbuttonYell:SetChecked(1)
 	end
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
-		getglobal("ThalizFrameCheckbuttonWhisper"):SetChecked(1)
+		ThalizFrameCheckbuttonWhisper:SetChecked(1)
 	end
 	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
-		getglobal("ThalizFrameCheckbuttonPerCharacter"):SetChecked(1)
+		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
 	end    
 	
 	Thaliz_ValidateResurrectionMessages();
@@ -1469,6 +1472,7 @@ function Thaliz_OnEvent(event)
 end
 
 function Thaliz_OnLoad()
+	msgEditorIsOpen = false;
 	THALIZ_CURRENT_VERSION = Thaliz_CalculateVersion( GetAddOnMetadata("Thaliz", "Version") );
 
 	Thaliz_Echo(string.format("version %s by %s", GetAddOnMetadata("Thaliz", "Version"), GetAddOnMetadata("Thaliz", "Author")));
@@ -1479,11 +1483,10 @@ function Thaliz_OnLoad()
     Thaliz_InitializeListElements();
 end
 
-
-
 function Thaliz_OKButton_OnClick()
 	ThalizMsgEditorFrame:Hide();
 	ThalizFrame:Hide();
+	msgEditorIsOpen = false;
 	
 	local whisperMsg = getglobal("ThalizFrameWhisper"):GetText(whisperMsg);
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, whisperMsg);
@@ -1492,11 +1495,15 @@ function Thaliz_OKButton_OnClick()
 end
 
 function Thaliz_CloseButton_OnClick()
-	ThalizMsgEditorFrame:Hide();
-	ThalizFrame:Hide();
---	Thaliz_ConfigurationLevel = Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings, Thaliz_Configuration_Default_Level);
+	if msgEditorIsOpen then
+		Thaliz_CloseMsgEditorButton_OnClick();
+	else
+		ThalizMsgEditorFrame:Hide();
+		ThalizFrame:Hide();
+	end;
 end
 
 function Thaliz_CloseMsgEditorButton_OnClick()
 	ThalizMsgEditorFrame:Hide();
+	msgEditorIsOpen = false;
 end
