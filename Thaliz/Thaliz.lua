@@ -12,20 +12,20 @@ Please see the ReadMe.txt for addon details.
 ]]
 
 
-local PARTY_CHANNEL = "PARTY"
-local RAID_CHANNEL  = "RAID"
-local YELL_CHANNEL  = "YELL"
-local SAY_CHANNEL   = "SAY"
-local WARN_CHANNEL  = "RAID_WARNING"
-local GUILD_CHANNEL = "GUILD"
-local CHAT_END      = "|r"
-local COLOUR_CHAT   = "|c8040A0F8"
-local COLOUR_INTRO  = "|c80B040F0"
-local THALIZ_PREFIX = "Thalizv1"
-local CTRA_PREFIX   = "CTRA"
-local THALIZ_MAX_MESSAGES = 200
+local PARTY_CHANNEL			= "PARTY"
+local RAID_CHANNEL			= "RAID"
+local YELL_CHANNEL			= "YELL"
+local SAY_CHANNEL			= "SAY"
+local WARN_CHANNEL			= "RAID_WARNING"
+local GUILD_CHANNEL			= "GUILD"
+local CHAT_END				= "|r"
+local COLOUR_CHAT			= "|c8040A0F8"
+local COLOUR_INTRO			= "|c80B040F0"
+local THALIZ_PREFIX			= "Thalizv1"
+local CTRA_PREFIX			= "CTRA"
+local THALIZ_MAX_MESSAGES	= 200
 local THALIZ_MAX_VISIBLE_MESSAGES = 20
-local THALIZ_EMPTY_MESSAGE = "(Empty)"
+local THALIZ_EMPTY_MESSAGE	= "(Empty)"
 
 local THALIZ_CURRENT_VERSION = 0
 local THALIZ_UPDATE_MESSAGE_SHOWN = false
