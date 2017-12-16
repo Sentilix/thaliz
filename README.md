@@ -1,5 +1,28 @@
 # The Thaliz Project
 
+## About the Thaliz Project
+This addon will target a random friendly (unreleased) corpse, if any.
+The target will be prioritized in the following order:
+
+* Highest priority to the corpse you are currently targetting (if any)
+* then other ressers are resurrected
+* then mana users are resurrected
+* then warriors are resurrected
+* and last the rogues.
+	
+If no Warlocks are up, one Warlock will be ressed after ressers are up. The
+raid leader will get priority just below the ressers, as he is usually also
+the loot master.
+
+When a corpse is being resurrected (unreleased or not), a random message is
+displayed on the screen. This can be configured to be either a /SAY, /YELL
+or in /RAID chat, together with an optional whisper to the target.
+
+Up to 200 random messages in total can be configured. The addon ships with
+20 pre-configured messages; mostly with quotes from famous World of Warcraft
+bosses.
+
+
 ## Thaliz 1.4
 Messages - or macros - can be grouped into one of five different groups:
 GUILD, CHARACTER, CLASS, RACE and DEFAULT.
@@ -24,28 +47,6 @@ macros in one or more of the other groups.
 And last, the resurrection whisper can now also be customized.
 
 
-
-## About the Thaliz Project
-This addon will target a random friendly (unreleased) corpse, if any.
-The target will be prioritized in the following order:
-
-* Highest priority to the corpse you are currently targetting (if any)
-* then other ressers are resurrected
-* then mana users are resurrected
-* then warriors are resurrected
-* and last the rogues.
-	
-If no Warlocks are up, one Warlock will be ressed after ressers are up. The
-raid leader will get priority just below the ressers, as he is usually also
-the loot master.
-
-When a corpse is being resurrected (unreleased or not), a random message is
-displayed on the screen. This can be configured to be either a /SAY, /YELL
-or in /RAID chat, together with an optional whisper to the target.
-
-Up to 200 random messages in total can be configured. The addon ships with
-20 pre-configured messages; mostly with quotes from famous World of Warcraft
-bosses.
 
 
 
