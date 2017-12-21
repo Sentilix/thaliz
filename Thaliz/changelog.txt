@@ -1,5 +1,5 @@
 
-Release 1.4.0 (2017-12-xx)
+Release 1.4.0 (2017-12-21)
 --------------------------
 Added: Configurations can now be set for guild/name/class/race.
 Added: Whisper can now be customized as well.
