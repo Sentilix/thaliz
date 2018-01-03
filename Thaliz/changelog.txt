@@ -1,4 +1,9 @@
 
+Release 1.4.1 (2018-01-xx)
+--------------------------
+Update: Casting a res while playing solo will now resurrect the target.
+
+
 Release 1.4.0 (2017-12-21)
 --------------------------
 Added: Configurations can now be set for guild/name/class/race.

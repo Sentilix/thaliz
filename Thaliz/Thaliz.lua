@@ -1021,6 +1021,7 @@ end
 ]]
 function Thaliz_StartResurrectionOnPriorityTarget()
 	-- Check by spell: no need to update death list if player cannot resurrect!
+	local targetname;
 	local classinfo = Thaliz_GetClassinfo(UnitClass("player"));
 	local spellname = classinfo[3];
 	if not spellname then
@@ -1035,7 +1036,15 @@ function Thaliz_StartResurrectionOnPriorityTarget()
 		groupsize = GetNumPartyMembers();
 		grouptype = "party";
 	else
-		Thaliz_Echo("You are not in a group!");
+		-- SOLO mode: Just cast a "normal" ress
+		targetname = UnitName("playertarget");
+		if targetname then	
+			CastSpellByName(spellname);	
+			if SpellIsTargeting() then
+				-- Out of range
+				SpellStopTargeting();
+			end
+		end
 		return;
 	end
 	
@@ -1051,7 +1060,6 @@ function Thaliz_StartResurrectionOnPriorityTarget()
 	Thaliz_CleanupBlacklistedPlayers();
 
 	local targetprio;
-	local targetname;
 		
 	local corpseTable = {};
 	local playername, unitid, classinfo;
