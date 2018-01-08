@@ -1,5 +1,5 @@
 
-Release 1.4.1 (2018-01-xx)
+Release 1.4.1 (2018-01-08)
 --------------------------
 Update: Casting a res while playing solo will now resurrect the target.
 
