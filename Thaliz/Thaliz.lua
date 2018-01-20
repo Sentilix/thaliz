@@ -1021,8 +1021,8 @@ end
 ]]
 function Thaliz_StartResurrectionOnPriorityTarget()
 	-- Check by spell: no need to update death list if player cannot resurrect!
-	local targetname;
 	local classinfo = Thaliz_GetClassinfo(UnitClass("player"));
+	local targetname;
 	local spellname = classinfo[3];
 	if not spellname then
 		return;
@@ -1132,10 +1132,16 @@ function Thaliz_StartResurrectionOnPriorityTarget()
 end
 
 function Thaliz_ChooseCorpse(corpseTable)
-	for key, val in corpseTable do
+	local currentTarget = UnitName("playertarget");
+
+	for key, val in corpseTable do	
 		if SpellCanTargetUnit(val[1]) then
 			return val[1];
 		end
+		-- spellCanTarget does not work if we already target the unit:		
+		if UnitName(val[1]) == currentTarget then
+			return val[1];
+		end;		
 	end
 	return nil;
 end
