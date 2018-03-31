@@ -279,8 +279,8 @@ function TitanPanelThalizButton_OnLoad()
     };
 end
 
-function TitanPanelQuickHealButton_GetTooltipText()
-    return "Click to toggle configuration panel";
+function TitanPanelThalizButton_GetTooltipText()
+    return "Click to toggle option panel";
 end
 
 
@@ -960,9 +960,9 @@ function Thaliz_GetResurrectionMessages()
 		messages = Thaliz_ResetResurrectionMessages(); 
 	end
 
-	-- Check if messages contains tables; this is to keep backwards compatibility with 1.3:
+	-- Check if messages contains tables; this is to keep backwards compatibility with Thaliz 1.3:
 	if not type(messages[1]) == "table" then
-		echo('Converting table from v1.3 to v1.4 ...');
+--		echo('Converting table from v1.3 to v1.4 ...');
 		for key, value in messages do
 			messages[key] = { messages[key], EMOTE_GROUP_DEFAULT, "" }
 		end
@@ -1160,9 +1160,9 @@ function Thaliz_StartResurrectionOnPriorityTarget()
 		
 		SpellTargetUnit(unitid);
 		if not SpellIsTargeting() then
+			Thaliz_SendAddonMessage("TX_RESBEGIN#"..playername.."#");
 			Thaliz_BlacklistPlayer(playername);
 			Thaliz_AnnounceResurrection(playername, unitid);
-			Thaliz_SendAddonMessage("TX_RESBEGIN#"..playername.."#");
 		else
 			SpellStopTargeting();
 		end
