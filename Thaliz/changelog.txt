@@ -1,4 +1,10 @@
 
+Release 1.4.3 (2018-xx-xx)
+--------------------------
+Added: Implemented integrated with TitanPanel.
+Update: Whisper editor no longer claims autofocus.
+
+
 Release 1.4.2 (2018-01-23)
 --------------------------
 Bugfix: Casting a res while targetting no longer writes a message.

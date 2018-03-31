@@ -21,6 +21,7 @@ local GUILD_CHANNEL			= "GUILD"
 local CHAT_END				= "|r"
 local COLOUR_CHAT			= "|c8040A0F8"
 local COLOUR_INTRO			= "|c80B040F0"
+local THALIZ_NAME			= "Thaliz"
 local THALIZ_PREFIX			= "Thalizv1"
 local CTRA_PREFIX			= "CTRA"
 local THALIZ_MAX_MESSAGES	= 200
@@ -59,6 +60,7 @@ local blacklistedTable = {}
 local Thaliz_Blacklist_Timeout = 25;
 
 local Thaliz_Enabled = true;
+local ThalizConfigDialogOpen = false;
 
 -- Configuration constants:
 local Thaliz_Configuration_Default_Level = "Character";	-- Can be "Character" or "Realm"
@@ -262,15 +264,54 @@ end
 
 --  *******************************************************
 --
+--	Titan Panel integration
+--
+--  *******************************************************
+function TitanPanelThalizButton_OnLoad()
+    this.registry = {
+        id = THALIZ_NAME,
+        menuText = THALIZ_NAME,
+        buttonTextFunction = nil,
+        tooltipTitle = THALIZ_NAME .. " Options",
+        tooltipTextFunction = "TitanPanelThalizButton_GetTooltipText",
+        frequency = 0,
+	    icon = "Interface\\Icons\\Spell_Holy_Resurrection"
+    };
+end
+
+function TitanPanelQuickHealButton_GetTooltipText()
+    return "Click to toggle configuration panel";
+end
+
+
+--  *******************************************************
+--
 --	Configuration functions
 --
 --  *******************************************************
+
+function Thaliz_ToggleConfigurationDialogue()
+	if ThalizConfigDialogOpen then
+		Thaliz_CloseButton_OnClick();
+	else
+		Thaliz_OpenConfigurationDialogue();
+	end;
+end
+
 function Thaliz_OpenConfigurationDialogue()
 	local whisperMsg = Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage);
-	getglobal("ThalizFrameWhisper"):SetText(whisperMsg);
-
+	ThalizFrameWhisper:SetText(whisperMsg);
+	ThalizFrameWhisper:SetAutoFocus(false);
+	ThalizConfigDialogOpen = true;
 	ThalizFrame:Show();
 end
+
+function Thaliz_CloseConfigurationDialogue()
+	ThalizConfigDialogOpen = false;
+	ThalizMsgEditorFrame:Hide();
+	ThalizFrame:Hide();
+end
+
 
 function Thaliz_RefreshVisibleMessageList(offset)
 	--echo(string.format("Offset=%d", offset));
@@ -1498,8 +1539,7 @@ function Thaliz_OnLoad()
 end
 
 function Thaliz_OKButton_OnClick()
-	ThalizMsgEditorFrame:Hide();
-	ThalizFrame:Hide();
+	Thaliz_CloseConfigurationDialogue();
 	msgEditorIsOpen = false;
 	
 	local whisperMsg = getglobal("ThalizFrameWhisper"):GetText(whisperMsg);
@@ -1512,8 +1552,7 @@ function Thaliz_CloseButton_OnClick()
 	if msgEditorIsOpen then
 		Thaliz_CloseMsgEditorButton_OnClick();
 	else
-		ThalizMsgEditorFrame:Hide();
-		ThalizFrame:Hide();
+		Thaliz_CloseConfigurationDialogue();
 	end;
 end
 

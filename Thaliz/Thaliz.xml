@@ -208,6 +208,26 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<!-- Dummy input field to claim frame focus -->
+			<EditBox name="$parentDummy" letters="1" visible="false">
+				<Size>
+					<AbsDimension x="0" y="0"/>
+				</Size>
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="-200" y="-200"/>
+					</Anchor>
+				</Anchors>
+				<FontString inherits="GameFontNormal"/>
+				<Scripts>
+					<OnLoad>
+						this:RegisterEvent("OnEscapePressed")
+					</OnLoad>
+					<OnEscapePressed>
+						Thaliz_CloseButton_OnClick()
+					</OnEscapePressed>
+				</Scripts>
+			</EditBox>
 			<!-- Whisper input field -->
 			<EditBox name="$parentWhisper" letters="120">
 				<Size>
@@ -632,6 +652,29 @@
 			</OnDragStop>
 		</Scripts>
 	</Frame>
+
+	<!-- Titan Panel Button (optional) -->
+	<Frame parent="UIParent" hide="true">
+		<Frames>
+			<Button name="TitanPanelThalizButton" inherits="TitanPanelIconTemplate" frameStrata="FULLSCREEN" toplevel="true">
+				<Scripts>
+					<OnLoad>
+						if TitanPanelButton_OnLoad then
+						TitanPanelThalizButton_OnLoad();
+						TitanPanelButton_OnLoad();
+						end
+					</OnLoad>
+					<OnClick>
+						if arg1 == "LeftButton" then
+						Thaliz_ToggleConfigurationDialogue();
+						end
+						TitanPanelButton_OnClick(arg1);
+					</OnClick>
+				</Scripts>
+			</Button>
+		</Frames>
+	</Frame>
+
 
 	<!-- Dummy event frame -->
 	<Frame name="ThalizEventFrame">
