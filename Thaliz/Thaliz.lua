@@ -1396,12 +1396,12 @@ end
 	We therefore generate a response back (RX) in raid with the syntax:
 	Thaliz:<sender (which is actually the receiver!)>:<version number>
 ]]
-local function HandleTXVersion(message, sender)
+function Thaliz_HandleTXVersion(message, sender)
 	local response = GetAddOnMetadata("Thaliz", "Version")	
 	Thaliz_SendAddonMessage("RX_VERSION#"..response.."#"..sender)
 end
 
-local function HandleTXResBegin(message, sender)
+function Thaliz_HandleTXResBegin(message, sender)
 	-- Blacklist target unless ress was initated by me
 	if not (sender == UnitName("player")) then
 		Thaliz_BlacklistPlayer(message);
@@ -1411,12 +1411,11 @@ end
 --[[
 	A version response (RX) was received. The version information is displayed locally.
 ]]
-local function HandleRXVersion(message, sender)
+function Thaliz_HandleRXVersion(message, sender)
 	Thaliz_Echo(string.format("%s is using Thaliz version %s", sender, message))
 end
 
-local function HandleTXVerCheck(message, sender)
---	echo(string.format("HandleTXVerCheck: msg=%s, sender=%s", message, sender));
+function Thaliz_HandleTXVerCheck(message, sender)
 	Thalix_CheckIsNewVersion(message);
 end
 
@@ -1442,13 +1441,13 @@ function Thaliz_HandleThalizMessage(msg, sender)
 	end
 
 	if cmd == "TX_VERSION" then
-		HandleTXVersion(message, sender)
+		Thaliz_HandleTXVersion(message, sender)
 	elseif cmd == "RX_VERSION" then
-		HandleRXVersion(message, sender)
+		Thaliz_HandleRXVersion(message, sender)
 	elseif cmd == "TX_RESBEGIN" then
-		HandleTXResBegin(message, sender)
+		Thaliz_HandleTXResBegin(message, sender)
 	elseif cmd == "TX_VERCHECK" then
-		HandleTXVerCheck(message, sender)
+		Thaliz_HandleTXVerCheck(message, sender)
 	end
 end
 
