@@ -1,4 +1,12 @@
 
+Release 1.4.4 (2018-05-xx)
+--------------------------
+Bugfix: Fixed use of "%" in messages
+Added: %c in message now writes the Class of the target.
+Added: %r in message now writes the Race of the target.
+Added: %g in message now writes the Guild of the target.
+
+
 Release 1.4.3 (2018-04-11)
 --------------------------
 Added: Implemented integrated with TitanPanel.

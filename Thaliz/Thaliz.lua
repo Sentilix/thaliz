@@ -12,23 +12,24 @@ Please see the ReadMe.txt for addon details.
 ]]
 
 
-local PARTY_CHANNEL			= "PARTY"
-local RAID_CHANNEL			= "RAID"
-local YELL_CHANNEL			= "YELL"
-local SAY_CHANNEL			= "SAY"
-local WARN_CHANNEL			= "RAID_WARNING"
-local GUILD_CHANNEL			= "GUILD"
-local CHAT_END				= "|r"
-local COLOUR_CHAT			= "|c8040A0F8"
-local COLOUR_INTRO			= "|c80B040F0"
-local THALIZ_NAME			= "Thaliz"
-local THALIZ_PREFIX			= "Thalizv1"
-local CTRA_PREFIX			= "CTRA"
-local THALIZ_MAX_MESSAGES	= 200
+local PARTY_CHANNEL								= "PARTY"
+local RAID_CHANNEL								= "RAID"
+local YELL_CHANNEL								= "YELL"
+local SAY_CHANNEL									= "SAY"
+local WARN_CHANNEL								= "RAID_WARNING"
+local GUILD_CHANNEL								= "GUILD"
+local CHAT_END										= "|r"
+local COLOUR_CHAT									= "|c8040A0F8"
+local COLOUR_INTRO								= "|c80B040F0"
+local THALIZ_NAME									= "Thaliz"
+local THALIZ_TITAN_TITLE					= "Thaliz - Ress dem deads!"
+local THALIZ_PREFIX								= "Thalizv1"
+local CTRA_PREFIX									= "CTRA"
+local THALIZ_MAX_MESSAGES					= 200
 local THALIZ_MAX_VISIBLE_MESSAGES = 20
-local THALIZ_EMPTY_MESSAGE	= "(Empty)"
+local THALIZ_EMPTY_MESSAGE				= "(Empty)"
 
-local THALIZ_CURRENT_VERSION = 0
+local THALIZ_CURRENT_VERSION			= 0
 local THALIZ_UPDATE_MESSAGE_SHOWN = false
 
 local EMOTE_GROUP_DEFAULT	= "Default";
@@ -270,7 +271,7 @@ end
 function TitanPanelThalizButton_OnLoad()
     this.registry = {
         id = THALIZ_NAME,
-        menuText = THALIZ_NAME,
+        menuText = THALIZ_TITAN_TITLE,
         buttonTextFunction = nil,
         tooltipTitle = THALIZ_NAME .. " Options",
         tooltipTextFunction = "TitanPanelThalizButton_GetTooltipText",
@@ -829,10 +830,11 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	local charname = string.upper(playername);
 
 	if guildname then
-		guildname = string.upper(guildname);
+		UCGuildname = string.upper(guildname);
 	else
 		-- Note: guildname is unfortunately not detected for released corpses.
-		guildname = "";
+		guildname = "(No Guild)";
+		UCGuildname = "";
 	end;	
 
 	--echo(string.format("Ressing: player=%s, unitid=%s", playername, unitid));
@@ -864,7 +866,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 			didx = didx + 1;
 			dmacro[ didx ] = macro;
 		elseif macro[2] == EMOTE_GROUP_GUILD then
-			if param == guildname then
+			if param == UCGuildname then
 				gidx = gidx + 1;
 				gmacro[ gidx ] = macro;
 			end
@@ -934,8 +936,21 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 		validMessages[1] = "Resurrecting %s";
 		validCount = 1;
 	end
+
+	local message = validMessages[ random(validCount) ];
+	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
+	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
+	message = string.gsub(message, "%%g", guildname);
+	message = string.gsub(message, "%%s", playername);
+--	message = string.format( message, playername );
+
 	
-	local message = string.format( validMessages[ random(validCount) ], playername );
+
+--[[
+	local guildname = GetGuildInfo(unitid);					--%g
+	local race = string.upper(UnitRace(unitid));		--%r
+	local class = string.upper(UnitClass(unitid));	--%c
+--]]
 	
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
 		partyEcho(message);
