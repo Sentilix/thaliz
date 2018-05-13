@@ -1,5 +1,5 @@
 
-Release 1.4.4 (2018-05-xx)
+Release 1.4.4 (2018-05-13)
 --------------------------
 Bugfix: Fixed use of "%" in messages
 Added: %c in message now writes the Class of the target.
