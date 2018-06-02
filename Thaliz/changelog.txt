@@ -1,4 +1,9 @@
 
+Release 1.4.5 (2018-06-01)
+--------------------------
+Update: Default quotes rewritten; all are now certified boss quotes.
+
+
 Release 1.4.4 (2018-05-13)
 --------------------------
 Bugfix: Fixed use of "%" in messages

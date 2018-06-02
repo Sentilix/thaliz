@@ -32,11 +32,11 @@ local THALIZ_EMPTY_MESSAGE				= "(Empty)"
 local THALIZ_CURRENT_VERSION			= 0
 local THALIZ_UPDATE_MESSAGE_SHOWN = false
 
-local EMOTE_GROUP_DEFAULT	= "Default";
-local EMOTE_GROUP_GUILD		= "Guild";
-local EMOTE_GROUP_CHARACTER = "Name";
-local EMOTE_GROUP_CLASS		= "Class";
-local EMOTE_GROUP_RACE		= "Race";
+local EMOTE_GROUP_DEFAULT					= "Default";
+local EMOTE_GROUP_GUILD						= "Guild";
+local EMOTE_GROUP_CHARACTER				= "Name";
+local EMOTE_GROUP_CLASS						= "Class";
+local EMOTE_GROUP_RACE						= "Race";
 
 --	List of valid class names with priority and resurrection spell name (if any)
 local classInfo = {
@@ -64,19 +64,19 @@ local Thaliz_Enabled = true;
 local ThalizConfigDialogOpen = false;
 
 -- Configuration constants:
-local Thaliz_Configuration_Default_Level = "Character";	-- Can be "Character" or "Realm"
-local Thaliz_Target_Channel_Default = "RAID";
-local Thaliz_Target_Whisper_Default = "0";
-local Thaliz_Resurrection_Whisper_Message_Default = "Resurrection incoming in 10 seconds!";
+local Thaliz_Configuration_Default_Level							= "Character";	-- Can be "Character" or "Realm"
+local Thaliz_Target_Channel_Default										= "RAID";
+local Thaliz_Target_Whisper_Default										= "0";
+local Thaliz_Resurrection_Whisper_Message_Default			= "Resurrection incoming in 10 seconds!";
 
-local Thaliz_ConfigurationLevel = Thaliz_Configuration_Default_Level;
+local Thaliz_ConfigurationLevel												= Thaliz_Configuration_Default_Level;
 
-local Thaliz_ROOT_OPTION_CharacterBasedSettings = "CharacterBasedSettings";
-local Thaliz_OPTION_ResurrectionMessageTargetChannel = "ResurrectionMessageTargetChannel";
-local Thaliz_OPTION_ResurrectionMessageTargetWhisper = "ResurrectionMessageTargetWhisper";
-local Thaliz_OPTION_AlwaysIncludeDefaultGroup = "AlwaysIncludeDefaultGroup";
-local Thaliz_OPTION_ResurrectionWhisperMessage = "ResurrectionWhisperMessage";
-local Thaliz_OPTION_ResurrectionMessages = "ResurrectionMessages";
+local Thaliz_ROOT_OPTION_CharacterBasedSettings				= "CharacterBasedSettings";
+local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
+local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
+local Thaliz_OPTION_AlwaysIncludeDefaultGroup					= "AlwaysIncludeDefaultGroup";
+local Thaliz_OPTION_ResurrectionWhisperMessage				= "ResurrectionWhisperMessage";
+local Thaliz_OPTION_ResurrectionMessages							= "ResurrectionMessages";
 
 
 -- Persisted information:
@@ -86,38 +86,43 @@ Thaliz_Options = {}
 -- List of resurrection messages
 --	{ "Message", "Group", "Group parameter value" }
 local Thaliz_DefaultResurrectionMessages = {
-	{ "(Ressing) Stop slacking and get up, %s!",						EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) How many \'Z\'s are in Vaelastrasz, %s?",				EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) Did you just do the unsafety dance, %s?",				EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) I\'m keeping my eye on you, %s!",						EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) Too soon, %s - you have died too soon!",				EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) Cower, %s! The age of darkness is at hand!",			EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) %s! Death! Destruction!",								EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) No more play, %s?",									EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) Your friends will abandon you, %s!",					EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) Slay %s in the masters name!",							EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) %s, Chuck Norris would have survived that!",			EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) %s, seems you ran out of health!",						EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) %s, you make the floor look dirty!",					EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) %s, there\'s loot waiting for you!",					EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) %s, you are too late... I... must... OBEY!",			EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) Shhh, %s... it will all be over soon.",				EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) %s! Cease this foolish venture at once!",				EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) Death is the only escape, %s.",						EMOTE_GROUP_DEFAULT, "" },
-	{ "(Ressing) The time for practice is over, %s!",					EMOTE_GROUP_DEFAULT, "" }
+	-- UBRS
+	{ "(Ressing) THIS CANNOT BE!!! %s, deal with these insects.",			EMOTE_GROUP_DEFAULT, "" },	-- Rend Blackhand (UBRS)
+	-- ZG
+	{ "(Ressing) I\'m keeping my eye on you, %s!",										EMOTE_GROUP_DEFAULT, "" },	-- Bloodlord Mandokir (Raptor boss)
+	{ "(Ressing) %s, fill me with your RAGE!",												EMOTE_GROUP_DEFAULT, "" },	-- High Priest Thekal (Tiger boss)
+	{ "(Ressing) Fleeing will do you no good, %s!",										EMOTE_GROUP_DEFAULT, "" },	-- Hakkar
+	-- AQ20
+	{ "(Ressing) Master %c %s, continue the fight!",													EMOTE_GROUP_DEFAULT, "" },	-- General Rajaxx
+	-- MC	
+	{ "(Ressing) Perhaps you'll need another lesson in pain, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Majordomo Executus
+	{ "(Ressing) Too soon, %s - you have died too soon!",							EMOTE_GROUP_DEFAULT, "" },	-- Ragnaros
+	{ "(Ressing) You have failed me, %s! Justice is met, indeed!",		EMOTE_GROUP_DEFAULT, "" }, 	-- Ragnaros
+	-- BWL
+	{ "(Ressing) Forgive me %s, your death only adds to my failure.",	EMOTE_GROUP_DEFAULT, "" },	-- Vaelastrasz
+	-- AQ40
+	{ "(Ressing) Let your death serve as an example, %s!",						EMOTE_GROUP_DEFAULT, "" },	-- Prophet Skeram
+	{ "(Ressing) Only flesh and bone. %cs are such easy prey, %s!",		EMOTE_GROUP_DEFAULT, "" },	-- Emperor Vek'lor (Twins)	
+	{ "(Ressing) Your friends will abandon you, %s!",									EMOTE_GROUP_DEFAULT, "" },	-- C'Thun
+	-- Naxx
+	{ "(Ressing) Shhh, %s... it will all be over soon.",							EMOTE_GROUP_DEFAULT, "" },	-- Anub'Rekhan
+	{ "(Ressing) Slay %s in the masters name!",												EMOTE_GROUP_DEFAULT, "" },	-- Grand Widow Faerlina
+	{ "(Ressing) Rise, %s! Rise and fight once more!",								EMOTE_GROUP_DEFAULT, "" },	-- Noth the Plaguebringer
+	{ "(Ressing) You should have stayed home, %s!",										EMOTE_GROUP_DEFAULT, "" },	-- Instructor Razuvious
+	{ "(Ressing) Death is the only escape, %s.",											EMOTE_GROUP_DEFAULT, "" },	-- Gothik the Harvester
+	{ "(Ressing) The first res goes to %s! Anyone care to wager?",		EMOTE_GROUP_DEFAULT, "" },	-- Lady Blaumeux (4HM)
+	{ "(Ressing) No more play, %s?",																	EMOTE_GROUP_DEFAULT, "" },	-- Patchwerk
+	{ "(Ressing) %s, you are too late... I... must... OBEY!",					EMOTE_GROUP_DEFAULT, "" } 	-- Thaddius
 }
-
 
 
 --[[
 	Echo a message for the local user only.
 ]]
 local function echo(msg)
-	if not msg then
-		msg = ""
+	if msg then
+		DEFAULT_CHAT_FRAME:AddMessage(COLOUR_CHAT .. msg .. CHAT_END)
 	end
-	DEFAULT_CHAT_FRAME:AddMessage(COLOUR_CHAT .. msg .. CHAT_END)
 end
 
 --[[
