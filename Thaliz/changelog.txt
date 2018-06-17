@@ -1,4 +1,9 @@
 
+Release 1.5.0 (2018-0x-0x)
+--------------------------
+Added: Option to use colours on ressed players (default: off)
+
+
 Release 1.4.5 (2018-06-01)
 --------------------------
 Update: Default quotes rewritten; all are now certified boss quotes.

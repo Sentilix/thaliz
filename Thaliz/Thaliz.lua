@@ -19,8 +19,9 @@ local SAY_CHANNEL									= "SAY"
 local WARN_CHANNEL								= "RAID_WARNING"
 local GUILD_CHANNEL								= "GUILD"
 local CHAT_END										= "|r"
-local COLOUR_CHAT									= "|c8040A0F8"
-local COLOUR_INTRO								= "|c80B040F0"
+local COLOUR_BEGINMARK						= "|c80"
+local COLOUR_CHAT									= COLOUR_BEGINMARK.."40A0F8"
+local COLOUR_INTRO								= COLOUR_BEGINMARK.."B040F0"
 local THALIZ_NAME									= "Thaliz"
 local THALIZ_TITAN_TITLE					= "Thaliz - Ress dem deads!"
 local THALIZ_PREFIX								= "Thalizv1"
@@ -40,16 +41,17 @@ local EMOTE_GROUP_RACE						= "Race";
 
 --	List of valid class names with priority and resurrection spell name (if any)
 local classInfo = {
-	{ "Druid",   40, "Rebirth" },
-	{ "Hunter",  30, nil },
-	{ "Mage",    40, nil },
-	{ "Paladin", 50, "Redemption" },
-	{ "Priest",  50, "Resurrection" },
-	{ "Rogue",   10, nil },
-	{ "Shaman",  50, "Ancestral Spirit" },
-	{ "Warlock", 30, nil },
-	{ "Warrior", 20, nil }
+	{ "Druid",   40, "Rebirth",						"FF7D0A" },
+	{ "Hunter",  30, nil,									"ABD473" },
+	{ "Mage",    40, nil,									"69CCF0" },
+	{ "Paladin", 50, "Redemption",				"F58CBA" },
+	{ "Priest",  50, "Resurrection",			"FFFFFF" },
+	{ "Rogue",   10, nil,									"FFF569" },
+	{ "Shaman",  50, "Ancestral Spirit",	"F58CBA" },
+	{ "Warlock", 30, nil,									"9482C9" },
+	{ "Warrior", 20, nil,									"C79C6E" }
 }
+
 
 local PriorityToFirstWarlock  = 45;     -- Prio below ressers if no warlocks are alive
 local PriorityToGroupLeader   = 45;     -- Prio below ressers if raid leader or assistant
@@ -67,6 +69,7 @@ local ThalizConfigDialogOpen = false;
 local Thaliz_Configuration_Default_Level							= "Character";	-- Can be "Character" or "Realm"
 local Thaliz_Target_Channel_Default										= "RAID";
 local Thaliz_Target_Whisper_Default										= "0";
+local Thaliz_Target_Colours_Default										= "0";
 local Thaliz_Resurrection_Whisper_Message_Default			= "Resurrection incoming in 10 seconds!";
 
 local Thaliz_ConfigurationLevel												= Thaliz_Configuration_Default_Level;
@@ -74,6 +77,7 @@ local Thaliz_ConfigurationLevel												= Thaliz_Configuration_Default_Level;
 local Thaliz_ROOT_OPTION_CharacterBasedSettings				= "CharacterBasedSettings";
 local Thaliz_OPTION_ResurrectionMessageTargetChannel	= "ResurrectionMessageTargetChannel";
 local Thaliz_OPTION_ResurrectionMessageTargetWhisper	= "ResurrectionMessageTargetWhisper";
+local Thaliz_OPTION_ResurrectionMessageTargetColours	= "ResurrectionMessageTargetColours";
 local Thaliz_OPTION_AlwaysIncludeDefaultGroup					= "AlwaysIncludeDefaultGroup";
 local Thaliz_OPTION_ResurrectionWhisperMessage				= "ResurrectionWhisperMessage";
 local Thaliz_OPTION_ResurrectionMessages							= "ResurrectionMessages";
@@ -584,6 +588,12 @@ function Thaliz_HandleCheckbox(checkbox)
 	else
 		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, 0);
 	end	
+
+	if ThalizFrameCheckbuttonColours:GetChecked() then
+		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetColours, 1);
+	else
+		Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetColours, 0);
+	end	
 	
 	if ThalizFrameCheckbuttonIncludeDefault:GetChecked() then
 		Thaliz_SetOption(Thaliz_OPTION_AlwaysIncludeDefaultGroup, 1);
@@ -725,6 +735,7 @@ function Thaliz_InitializeConfigSettings()
 	
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel, Thaliz_Target_Channel_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper, Thaliz_Target_Whisper_Default))
+	Thaliz_SetOption(Thaliz_OPTION_ResurrectionMessageTargetColours, Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetColours, Thaliz_Target_Colours_Default))
 	Thaliz_SetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_GetOption(Thaliz_OPTION_ResurrectionWhisperMessage, Thaliz_Resurrection_Whisper_Message_Default))
 
 
@@ -739,6 +750,9 @@ function Thaliz_InitializeConfigSettings()
 	end
 	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetWhisper) == 1 then
 		ThalizFrameCheckbuttonWhisper:SetChecked(1)
+	end
+	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetColours) == 1 then
+		ThalizFrameCheckbuttonColours:SetChecked(1)
 	end
 	if Thaliz_GetRootOption(Thaliz_ROOT_OPTION_CharacterBasedSettings) == "Character" then
 		ThalizFrameCheckbuttonPerCharacter:SetChecked(1)
@@ -946,8 +960,19 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	message = string.gsub(message, "%%c", Thaliz_UCFirst(class));
 	message = string.gsub(message, "%%r", Thaliz_UCFirst(race));
 	message = string.gsub(message, "%%g", guildname);
-	message = string.gsub(message, "%%s", playername);
---	message = string.format( message, playername );
+	
+	-- Apply colours (if enabled and Raid is used. YELL and SAY doesn't work):
+	local clsInfo = Thaliz_GetClassinfo(Thaliz_UCFirst(class));	
+	local targetChannel = Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel);
+	local targetname = playername;
+		
+	if clsInfo and
+			(targetChannel == "RAID") and
+			(Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetColours) == 1)
+	then
+		targetname = COLOUR_BEGINMARK..clsInfo[4]..playername..CHAT_END;
+	end;
+	message = string.gsub(message, "%%s", targetname);
 
 	
 
@@ -957,11 +982,11 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 	local class = string.upper(UnitClass(unitid));	--%c
 --]]
 	
-	if Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "RAID" then
+	if targetChannel == "RAID" then
 		partyEcho(message);
-	elseif Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "SAY" then
+	elseif targetChannel == "SAY" then
 		SendChatMessage(message, SAY_CHANNEL)
-	elseif Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetChannel) == "YELL" then
+	elseif targetChannel == "YELL" then
 		SendChatMessage(message, YELL_CHANNEL)
 	end
 	

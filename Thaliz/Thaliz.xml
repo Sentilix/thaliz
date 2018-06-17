@@ -208,6 +208,21 @@
 					</OnClick>
 				</Scripts>
 			</CheckButton>
+			<CheckButton name="$parentCheckbuttonColours" inherits="OptionsCheckButtonTemplate">
+				<Anchors>
+					<Anchor point="TOPLEFT">
+						<Offset x="16" y="-450"/>
+					</Anchor>
+				</Anchors>
+				<Scripts>
+					<OnLoad>
+						getglobal(this:GetName().."Text"):SetText("Enable coloured player names")
+					</OnLoad>
+					<OnClick>
+						Thaliz_HandleCheckbox(this);
+					</OnClick>
+				</Scripts>
+			</CheckButton>
 			<!-- Dummy input field to claim frame focus -->
 			<EditBox name="$parentDummy" letters="1" visible="false">
 				<Size>
