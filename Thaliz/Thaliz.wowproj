@@ -14,6 +14,13 @@
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\WowAddonStudio\2.0\WowAddonStudio.targets" />
   <ItemGroup>
+    <Content Include="ThalizBulkEditor.lua">
+      <SubType>Code</SubType>
+      <DependentUpon>ThalizBulkEditor.xml</DependentUpon>
+    </Content>
+    <Content Include="ThalizBulkEditor.xml">
+      <SubType>Frame</SubType>
+    </Content>
     <Content Include="changelog.txt" />
     <Content Include="ReadMe.txt" />
     <Content Include="Thaliz.toc">

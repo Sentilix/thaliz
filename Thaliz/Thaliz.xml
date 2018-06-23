@@ -211,7 +211,7 @@
 			<CheckButton name="$parentCheckbuttonColours" inherits="OptionsCheckButtonTemplate">
 				<Anchors>
 					<Anchor point="TOPLEFT">
-						<Offset x="16" y="-450"/>
+						<Offset x="16" y="-450" />
 					</Anchor>
 				</Anchors>
 				<Scripts>
@@ -331,7 +331,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0" right="0.125" top="0" borrom="1.0"/>
+					<TexCoords left="0" right="0.125" top="0" bottom="1.0"/>
 				</Texture>
 				<Texture name="$parentTextureRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
 					<Size>
@@ -344,7 +344,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.875" right="1.0" top="0" borrom="1.0"/>
+					<TexCoords left="0.875" right="1" top="0" bottom="1.0" />
 				</Texture>
 				<Texture name="$parentTextureCenter" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
 					<Size>
@@ -354,7 +354,7 @@
 						<Anchor point="LEFT" relativeTo="$parentTextureLeft" relativePoint="RIGHT"/>
 						<Anchor point="RIGHT" relativeTo="$parentTextureRight" relativePoint="LEFT"/>
 					</Anchors>
-					<TexCoords left="0" right="0.9375" top="0" borrom="1.0"/>
+					<TexCoords left="0" right="0.9375" top="0" bottom="1.0" />
 				</Texture>
 			</Layer>
 		</Layers>
@@ -570,8 +570,8 @@
 				</Scripts>
 			</CheckButton>
 		</Frames>
-		<Layers>			
-			<Layer level="BORDER">			
+		<Layers>
+			<Layer level="BORDER">
 				<!-- Message EditBox border -->
 				<Texture name="$parentTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
 					<Size>
@@ -584,7 +584,7 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0" right="0.125" top="0" borrom="1.0"/>
+					<TexCoords left="0" right="0.125" top="0" bottom="1.0" />
 				</Texture>
 				<Texture name="$parentTextureRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
 					<Size>
@@ -597,54 +597,54 @@
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.875" right="1.0" top="0" borrom="1.0"/>
+					<TexCoords left="0.875" right="1" top="0" bottom="1.0" />
 				</Texture>
 				<Texture name="$parentTextureCenter" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
 					<Size>
-						<AbsDimension x="1" y="32"/>
+						<AbsDimension x="1" y="32" />
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentTextureLeft" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeTo="$parentTextureRight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeTo="$parentTextureLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentTextureRight" relativePoint="LEFT" />
 					</Anchors>
-					<TexCoords left="0" right="0.9375" top="0" borrom="1.0"/>
+					<TexCoords left="0" right="0.9375" top="0" bottom="1.0" />
 				</Texture>
 				<!-- Value EditBox border -->
 				<Texture name="$parentValTextureLeft" file="Interface\ChatFrame\UI-ChatInputBorder-Left">
 					<Size>
-						<AbsDimension x="32" y="32"/>
+						<AbsDimension x="32" y="32" />
 					</Size>
 					<Anchors>
 						<Anchor point="LEFT">
 							<Offset>
-								<AbsDimension x="440" y="-8"/>
+								<AbsDimension x="440" y="-8" />
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0" right="0.125" top="0" borrom="1.0"/>
+					<TexCoords left="0" right="0.125" top="0" bottom="1.0" />
 				</Texture>
 				<Texture name="$parentValTextureRight" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
 					<Size>
-						<AbsDimension x="32" y="32"/>
+						<AbsDimension x="32" y="32" />
 					</Size>
 					<Anchors>
 						<Anchor point="RIGHT">
 							<Offset>
-								<AbsDimension x="-16" y="-8"/>
+								<AbsDimension x="-16" y="-8" />
 							</Offset>
 						</Anchor>
 					</Anchors>
-					<TexCoords left="0.875" right="1.0" top="0" borrom="1.0"/>
+					<TexCoords left="0.875" right="1" top="0" bottom="1.0" />
 				</Texture>
 				<Texture name="$parentValTextureCenter" file="Interface\ChatFrame\UI-ChatInputBorder-Right">
 					<Size>
-						<AbsDimension x="1" y="32"/>
+						<AbsDimension x="1" y="32" />
 					</Size>
 					<Anchors>
-						<Anchor point="LEFT" relativeTo="$parentValTextureLeft" relativePoint="RIGHT"/>
-						<Anchor point="RIGHT" relativeTo="$parentValTextureRight" relativePoint="LEFT"/>
+						<Anchor point="LEFT" relativeTo="$parentValTextureLeft" relativePoint="RIGHT" />
+						<Anchor point="RIGHT" relativeTo="$parentValTextureRight" relativePoint="LEFT" />
 					</Anchors>
-					<TexCoords left="0" right="0.9375" top="0" borrom="1.0"/>
+					<TexCoords left="0" right="0.9375" top="0" bottom="1.0" />
 				</Texture>
 			</Layer>
 			<Layer level="BACKGROUND">

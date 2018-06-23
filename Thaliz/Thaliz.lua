@@ -970,7 +970,7 @@ function Thaliz_AnnounceResurrection(playername, unitid)
 			(targetChannel == "RAID") and
 			(Thaliz_GetOption(Thaliz_OPTION_ResurrectionMessageTargetColours) == 1)
 	then
-		targetname = COLOUR_BEGINMARK..clsInfo[4]..playername..CHAT_END;
+		targetname = COLOUR_BEGINMARK..clsInfo[4].."["..playername.."]"..CHAT_END;
 	end;
 	message = string.gsub(message, "%%s", targetname);
 

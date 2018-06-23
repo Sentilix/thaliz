@@ -1,4 +1,8 @@
 
+TODO list:
+Ability to import/export macros (postponded due to issues with EditBox)
+
+
 Release 1.5.0 (2018-0x-0x)
 --------------------------
 Added: Option to use colours on ressed players (default: off)
